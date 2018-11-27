@@ -1,28 +1,31 @@
 config = {
     "game": {
         "caption": "SpaceHunters",
-        "version": "0.0.1 alpha",
-        "resolution": {
-            "width": 640,
-            "height": 640
-        },
-        "fps": 60
+        "version": "0.1.0 alpha",
+        "width": 350,
+        "height": 640,
+        "fps": 60,
+        "spawnEnemyTick": 120
     },
     "player": {
         "healthPoints": 10,
         "damage": 3,
-        "velocity": 10,
+        "velocity": 9,
         "bulletsPerShot": 1,
-        "width": 50,
-        "height": 50
+        "width": 75,
+        "height": 55,
+        "color": (0, 100, 0),
+        "bulletColor": (255, 255, 255)
     },
     "enemy": {
-        "healthPoints": 1,
+        "healthPoints": 3,
         "damage": 3,
         "velocity": 1,
         "bulletsPerShot": 1,
-        "width": 50,
-        "height": 50
+        "width": 75,
+        "height": 60,
+        "color": (100, 0, 0),
+        "bulletColor": (241, 196, 15)
     },
     "boss": {
         "healthPoints": 50,

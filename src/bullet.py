@@ -16,6 +16,10 @@ class Bullet(Movable):
     def owner(self):
         return self.__owner
 
+    @property
+    def damage(self):
+        return self.__damage
+
     def __init__(self, 
                 game, 
                 x, 
@@ -23,20 +27,22 @@ class Bullet(Movable):
                 destinationX,
                 destinationY,
                 velocity,
+                damage=1,
                 owner=None,
                 width=5, 
                 height=10, 
-                color=config["colors"]["white"]):
+                color=None):
         Movable.__init__(self, game, x, y, width, height, color, velocity)
         self.__deltaX = (destinationX - x) / 60
         self.__deltaY = (destinationY - y) / 60
         self.__owner = type(owner)
-
-    def draw(self):
-        Drawable.draw(self)
+        self.__damage = damage
+    
+    def update(self):
+        self.draw()
         self.move(self.deltaX, self.deltaY)
         self.checkCollision()
-    
+
     def checkCollision(self):
         for entity in self.game.gameObjects:
             if entity == self:
@@ -44,8 +50,8 @@ class Bullet(Movable):
             if type(entity) == self.owner:
                 continue
             if type(entity) is Bullet:
-                if entity.owner is self.owner:
-                    continue
+                continue
             if (self.x >= entity.borderLeft and self.x <= entity.borderRight) and (self.y >= entity.borderTop and self.y <= entity.borderBottom):
-                self.game.deleteEntity(entity)
+                entity.hurt(self.damage)
                 self.game.deleteEntity(self)
+                

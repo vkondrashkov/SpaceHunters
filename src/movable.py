@@ -21,8 +21,8 @@ class Movable(Drawable):
         self.x += deltaX
         self.y += deltaY
         
-        screenWidth = config["game"]["resolution"]["width"]
-        screenHeight = config["game"]["resolution"]["height"]
+        screenWidth = config["game"]["width"]
+        screenHeight = config["game"]["height"]
         if self.y < 0 or self.y > screenHeight:
             self.game.deleteEntity(self)
         

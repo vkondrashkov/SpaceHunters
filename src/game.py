@@ -6,23 +6,49 @@ from src.player import Player
 from src.bullet import Bullet
 from src.enemy import Enemy
 
+pygame.init()
+
 class Game:
+    gameFont = pygame.font.Font(None, 30)
     gameObjects = []
+    background = pygame.image.load("background.png")
 
     @property
     def display(self):
         return self.__display
+    
+    @property
+    def screenWidth(self):
+        return self.__screenWidth
 
-    def __init__(self, display):
+    @property
+    def screenHeight(self):
+        return self.__screenHeight
+    
+    @property
+    def resolution(self):
+        return (self.screenWidth, self.screenHeight)
+
+    def __init__(self):
+        self.__screenWidth = config["game"]["width"]
+        self.__screenHeight = config["game"]["height"]
+        self.background = pygame.transform.scale(self.background, self.resolution)
+
+        display = pygame.display.set_mode(self.resolution)
+        pygame.display.set_caption(config["game"]["caption"])
+
         self.__display = display
-        self.spawnEnemyTick = 60
+        self.spawnEnemyTick = config["game"]["spawnEnemyTick"]
+        self.difficultyTick = 60
 
     def start(self):
+        self.running = True
+
         clock = pygame.time.Clock()
         player = Player(self)
         self.gameObjects.append(player)
 
-        while True:
+        while self.running:
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     exit()
@@ -43,14 +69,32 @@ class Game:
             if self.spawnEnemyTick > 0:
                 self.spawnEnemyTick -= 1
             else:
-                self.gameObjects.append(Enemy(self, randint(0, 590), 0, target=player))
-                self.spawnEnemyTick = 120
-            self.display.fill(config["colors"]["black"])
+                x = randint(0, self.screenWidth - config["enemy"]["width"])
+                y = 0
+                self.gameObjects.append(Enemy(self, x, y, target=player))
+                self.spawnEnemyTick = config["game"]["spawnEnemyTick"]
+            if self.difficultyTick > 0:
+                self.difficultyTick -= 1
+            else:
+                self.difficultyTick = 60
+            self.display.blit(self.background, (0, 0))
             player.move(deltaX, deltaY)
             for object in self.gameObjects:
-                object.draw()
+                object.update()
+            self.displayStats(player)
             pygame.display.update()
             clock.tick(config["game"]["fps"])
+
+    def displayStats(self, player):
+        healthPointsString = ""
+        for _ in range(0, player.healthPoints):
+            healthPointsString += "[X]"
+        kills = self.gameFont.render("HP: " + healthPointsString, False, (128, 128, 128))
+        self.display.blit(kills,(10, self.screenHeight - 30))
+
+    def end(self):
+        self.running = False
+        self.gameObjects = []
 
     def deleteEntity(self, obj):
         self.gameObjects.remove(obj)
