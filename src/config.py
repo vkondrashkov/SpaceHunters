@@ -1,7 +1,7 @@
 config = {
     "game": {
         "caption": "SpaceHunters",
-        "version": "0.2.1 alpha",
+        "version": "0.2.2 alpha",
         "width": 350,
         "height": 640,
         "fps": 60,
@@ -25,7 +25,8 @@ config = {
         "width": 75,
         "height": 60,
         "color": (100, 0, 0),
-        "bulletColor": (241, 196, 15)
+        "bulletColor": (241, 196, 15),
+        "score": 3
     },
     "boss": {
         "healthPoints": 50,

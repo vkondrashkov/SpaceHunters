@@ -17,7 +17,8 @@ class Enemy(Character):
                 damage, 
                 bulletsPerShot,
                 tile,
-                bulletTile):
+                bulletTile,
+                score):
         Character.__init__(self, game, x, y, 
                                 width, height, color, 
                                 velocity, healthPoints, 
@@ -25,6 +26,7 @@ class Enemy(Character):
         self.target = target
         self.shootRateTick = 30
         self.bulletTile = bulletTile
+        self.score = score
 
     def shoot(self):
         if self.shootRateTick > 0:
@@ -33,6 +35,10 @@ class Enemy(Character):
         bullet = Bullet(self.game, self.centerX, self.borderBottom + 10, self.centerX, self.game.screenHeight, 100, owner=self, color=self.bulletTile)
         self.game.gameObjects.append(bullet)
         self.shootRateTick = 120
+    
+    def die(self):
+        Character.die(self)
+        self.game.score += self.score
 
     def update(self):
         if self.healthPoints <= 0:

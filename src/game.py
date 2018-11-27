@@ -15,6 +15,7 @@ class Game:
     hpTile = pygame.image.load("playerHP.png")
     playerTile = pygame.image.load("player.png")
     enemyTile = pygame.image.load("enemy.png")
+    score = 0
 
     @property
     def display(self):
@@ -98,7 +99,8 @@ class Game:
                                             damage=config["enemy"]["damage"], 
                                             bulletsPerShot=config["enemy"]["bulletsPerShot"],
                                             tile=self.enemyTile,
-                                            bulletTile=config["enemy"]["bulletColor"]))
+                                            bulletTile=config["enemy"]["bulletColor"],
+                                            score=config["enemy"]["score"]))
                 self.spawnEnemyTick = config["game"]["spawnEnemyTick"]
             if self.difficultyTick > 0:
                 self.difficultyTick -= 1
@@ -113,6 +115,9 @@ class Game:
             clock.tick(config["game"]["fps"])
 
     def displayStats(self, player):
+        scoreString = "Score: " + str(self.score)
+        score = self.gameFont.render(scoreString, False, (250, 250, 250))
+        self.display.blit(score, (10, 10))
         if player.healthPoints > 5:
             hpString = str(player.healthPoints) + "x"
             textWidth, _ = self.gameFont.size(hpString)
