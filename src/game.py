@@ -61,7 +61,8 @@ class Game:
                         tile=self.playerTile,
                         bulletTile=config["player"]["bulletColor"])
         self.gameObjects.append(player)
-
+        pygame.mixer.music.load("backgroundMusic.wav")
+        pygame.mixer.music.play(-1)
         while self.running:
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
