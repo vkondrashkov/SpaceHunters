@@ -12,6 +12,7 @@ class Game:
     gameFont = pygame.font.Font(None, 30)
     gameObjects = []
     background = pygame.image.load("background.png")
+    hpTile = pygame.image.load("playerHP.png")
 
     @property
     def display(self):
@@ -86,11 +87,15 @@ class Game:
             clock.tick(config["game"]["fps"])
 
     def displayStats(self, player):
-        healthPointsString = ""
-        for _ in range(0, player.healthPoints):
-            healthPointsString += "[X]"
-        kills = self.gameFont.render("HP: " + healthPointsString, False, (128, 128, 128))
-        self.display.blit(kills,(10, self.screenHeight - 30))
+        if player.healthPoints > 5:
+            hpString = str(player.healthPoints) + "x"
+            textWidth, _ = self.gameFont.size(hpString)
+            healthPointsString = self.gameFont.render(hpString, False, (250, 250, 250))
+            self.display.blit(healthPointsString, (10, self.screenHeight - 25))
+            self.display.blit(self.hpTile, (15 + textWidth, self.screenHeight - 30))
+        else:
+            for i in range(0, player.healthPoints):
+                self.display.blit(self.hpTile, (10 + i*35, self.screenHeight - 30))
 
     def end(self):
         self.running = False

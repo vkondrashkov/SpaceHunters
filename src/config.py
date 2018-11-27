@@ -1,7 +1,7 @@
 config = {
     "game": {
         "caption": "SpaceHunters",
-        "version": "0.1.0 alpha",
+        "version": "0.1.1 alpha",
         "width": 350,
         "height": 640,
         "fps": 60,
@@ -19,7 +19,7 @@ config = {
     },
     "enemy": {
         "healthPoints": 3,
-        "damage": 3,
+        "damage": 1,
         "velocity": 1,
         "bulletsPerShot": 1,
         "width": 75,
