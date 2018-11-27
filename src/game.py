@@ -13,6 +13,8 @@ class Game:
     gameObjects = []
     background = pygame.image.load("background.png")
     hpTile = pygame.image.load("playerHP.png")
+    playerTile = pygame.image.load("player.png")
+    enemyTile = pygame.image.load("enemy.png")
 
     @property
     def display(self):
@@ -46,7 +48,18 @@ class Game:
         self.running = True
 
         clock = pygame.time.Clock()
-        player = Player(self)
+        player = Player(self,
+                        x=(config["game"]["width"] - config["player"]["width"]) / 2, 
+                        y=config["game"]["height"] - config["player"]["height"] - 100, 
+                        width=config["player"]["width"], 
+                        height=config["player"]["height"], 
+                        color=config["player"]["color"], 
+                        velocity=config["player"]["velocity"], 
+                        healthPoints=config["player"]["healthPoints"], 
+                        damage=config["player"]["damage"], 
+                        bulletsPerShot=config["player"]["bulletsPerShot"],
+                        tile=self.playerTile,
+                        bulletTile=config["player"]["bulletColor"])
         self.gameObjects.append(player)
 
         while self.running:
@@ -72,7 +85,19 @@ class Game:
             else:
                 x = randint(0, self.screenWidth - config["enemy"]["width"])
                 y = 0
-                self.gameObjects.append(Enemy(self, x, y, target=player))
+                self.gameObjects.append(Enemy(self, 
+                                            x=x, 
+                                            y=y, 
+                                            target=player,
+                                            width=config["enemy"]["width"], 
+                                            height=config["enemy"]["height"], 
+                                            color=config["colors"]["red"], 
+                                            velocity=config["enemy"]["velocity"], 
+                                            healthPoints=config["enemy"]["healthPoints"], 
+                                            damage=config["enemy"]["damage"], 
+                                            bulletsPerShot=config["enemy"]["bulletsPerShot"],
+                                            tile=self.enemyTile,
+                                            bulletTile=config["enemy"]["bulletColor"]))
                 self.spawnEnemyTick = config["game"]["spawnEnemyTick"]
             if self.difficultyTick > 0:
                 self.difficultyTick -= 1

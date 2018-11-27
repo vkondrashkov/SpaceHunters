@@ -1,5 +1,5 @@
 import pygame
-from src.config import config
+
 from src.movable import Movable
 from src.drawable import Drawable
 

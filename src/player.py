@@ -1,50 +1,39 @@
 import pygame
 
 from src.character import Character
-from src.config import config
 from src.bullet import Bullet
 
 class Player(Character):
     playerTile = pygame.image.load("player.png")
 
-    def __init__(self, game, 
-                x=(config["game"]["width"] - config["player"]["width"]) / 2, 
-                y=config["game"]["height"] - config["player"]["height"] - 100, 
-                width=config["player"]["width"], 
-                height=config["player"]["height"], 
-                color=config["player"]["color"], 
-                velocity=config["player"]["velocity"], 
-                healthPoints=config["player"]["healthPoints"], 
-                damage=config["player"]["damage"], 
-                bulletsPerShot=config["player"]["bulletsPerShot"]):
+    def __init__(self, game, x, y, width, height, 
+                color, velocity, healthPoints, 
+                damage, bulletsPerShot, tile,
+                bulletTile):
         Character.__init__(self, game, x, y, 
                                 width, height, color, 
                                 velocity, healthPoints, 
-                                damage, bulletsPerShot)
+                                damage, bulletsPerShot, tile)
+        self.bulletTile = bulletTile
         self.playerTile = pygame.transform.scale(self.playerTile, (self.width, self.height))
 
 
     def shoot(self):
-        bullet = Bullet(self.game, self.centerX, self.y - 10, self.centerX, 0, 100, owner=self, damage=self.damage, color=config["player"]["bulletColor"])
+        bullet = Bullet(self.game, self.centerX, self.y - 10, self.centerX, 0, 100, owner=self, damage=self.damage, color=self.bulletTile)
         self.game.gameObjects.append(bullet)
 
     def move(self, deltaX, deltaY):
         Character.move(self, deltaX, deltaY)
         
-        screenBounds = config["game"]["height"] / 2
-        screenWidth = config["game"]["width"]
-        screenHeight = config["game"]["height"]
-        if self.y <= screenBounds and deltaY < 0:
-            self.y = screenBounds
+        heightBounds = self.game.screenHeight / 2
+        if self.y <= heightBounds and deltaY < 0:
+            self.y = heightBounds
         if self.borderLeft <= 0 and deltaX < 0:
             self.x = 0
-        if self.borderRight >= screenWidth and deltaX > 0:
-            self.x = screenWidth - self.width
-        if self.borderBottom >= screenHeight and deltaY > 0:
-            self.y = screenHeight - self.height
-
-    def draw(self):
-        self.game.display.blit(self.playerTile, (self.x, self.y))
+        if self.borderRight >= self.game.screenWidth and deltaX > 0:
+            self.x = self.game.screenWidth - self.width
+        if self.borderBottom >= self.game.screenHeight and deltaY > 0:
+            self.y = self.game.screenHeight - self.height
 
     def update(self):
         if self.healthPoints <= 0:
