@@ -5,19 +5,19 @@ class Object:
 
     @property
     def borderTop(self):
-        return self.y
+        return int(self.y)
 
     @property
     def borderBottom(self):
-        return self.y + self.height
+        return int(self.y + self.height)
 
     @property
     def borderLeft(self):
-        return self.x
+        return int(self.x)
 
     @property
     def borderRight(self):
-        return self.x + self.width
+        return int(self.x + self.width)
 
     @property
     def width(self):

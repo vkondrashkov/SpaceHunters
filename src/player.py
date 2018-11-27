@@ -53,6 +53,9 @@ class Player(Character):
                 continue
             entityBordersX = range(entity.borderLeft, entity.borderRight)
             entityBordersY = range(entity.borderTop, entity.borderBottom)
-            if (self.borderLeft in entityBordersX or self.borderRight in entityBordersX) and (self.borderTop in entityBordersY or self.borderBottom in entityBordersY):
+            playerBordersX = range(self.borderLeft, self.borderRight)
+            playerBordersY = range(self.borderTop, self.borderBottom)
+            if ((self.borderLeft in entityBordersX or self.borderRight in entityBordersX) \
+                and (self.borderTop in entityBordersY or self.borderBottom in entityBordersY)):
                 self.game.deleteEntity(self)
                 self.game.end() 
