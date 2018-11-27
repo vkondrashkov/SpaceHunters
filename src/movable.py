@@ -2,7 +2,6 @@ import pygame
 
 from abc import ABCMeta, abstractmethod
 from src.drawable import Drawable
-from src.config import config
 
 class Movable(Drawable):
     __metaclass__ = ABCMeta
@@ -21,8 +20,6 @@ class Movable(Drawable):
         self.x += deltaX
         self.y += deltaY
         
-        screenWidth = config["game"]["width"]
-        screenHeight = config["game"]["height"]
-        if self.y < 0 or self.y > screenHeight:
+        if self.y < 0 or self.y > self.game.screenHeight:
             self.game.deleteEntity(self)
         
