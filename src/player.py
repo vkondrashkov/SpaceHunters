@@ -5,21 +5,18 @@ from src.config import config
 from src.bullet import Bullet
 
 class Player(Character):
-    gameConfig = config["game"]
-    playerConfig = config["player"]
-
     playerTile = pygame.image.load("player.png")
 
     def __init__(self, game, 
-                x=(gameConfig["width"] - playerConfig["width"]) / 2, 
-                y=gameConfig["height"] - playerConfig["height"] - 100, 
-                width=playerConfig["width"], 
-                height=playerConfig["height"], 
-                color=playerConfig["color"], 
-                velocity=playerConfig["velocity"], 
-                healthPoints=playerConfig["healthPoints"], 
-                damage=playerConfig["damage"], 
-                bulletsPerShot=playerConfig["bulletsPerShot"]):
+                x=(config["game"]["width"] - config["player"]["width"]) / 2, 
+                y=config["game"]["height"] - config["player"]["height"] - 100, 
+                width=config["player"]["width"], 
+                height=config["player"]["height"], 
+                color=config["player"]["color"], 
+                velocity=config["player"]["velocity"], 
+                healthPoints=config["player"]["healthPoints"], 
+                damage=config["player"]["damage"], 
+                bulletsPerShot=config["player"]["bulletsPerShot"]):
         Character.__init__(self, game, x, y, 
                                 width, height, color, 
                                 velocity, healthPoints, 
@@ -28,7 +25,7 @@ class Player(Character):
 
 
     def shoot(self):
-        bullet = Bullet(self.game, self.centerX, self.y - 10, self.centerX, 0, 100, owner=self, damage=self.damage, color=self.playerConfig["bulletColor"])
+        bullet = Bullet(self.game, self.centerX, self.y - 10, self.centerX, 0, 100, owner=self, damage=self.damage, color=config["player"]["bulletColor"])
         self.game.gameObjects.append(bullet)
 
     def move(self, deltaX, deltaY):
