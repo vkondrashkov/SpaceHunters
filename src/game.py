@@ -39,27 +39,31 @@ class Game:
     def loadConfig(self):
         self.gameFont = pygame.font.Font(None, 30)
         self.gameObjects = []
-        self.__screenWidth = config["game"]["width"]
-        self.__screenHeight = config["game"]["height"]
-        backgroundImage = pygame.image.load("background.png")
-        self.background = pygame.transform.scale(backgroundImage, self.resolution)
-        self.__caption = config["game"]["caption"]
-        self.hpTile = pygame.image.load("playerHP.png")
-        self.playerTile = pygame.image.load("player.png")
-        self.enemyTile = pygame.image.load("enemy.png")
-        self.shotSound = pygame.mixer.Sound("shotSound.wav")
-        self.blowSound = pygame.mixer.Sound("blowSound.wav")
-        self.playerShotTile = pygame.image.load("playerShot.png")
-        self.enemyShotTile = pygame.image.load("enemyShot.png")
-        self.spawnEnemyTick = config["game"]["spawnEnemyTick"]
-        self.difficultyTick = config["game"]["difficultyTick"]
         self.difficultyGrade = 1
         self.score = 0
         self.explosionFrames = []
-        sheet = pygame.image.load("explosion.png")
+
+        self.__screenWidth = config["game"]["width"]
+        self.__screenHeight = config["game"]["height"]
+        self.__caption = config["game"]["caption"]
+        self.difficultyTick = config["game"]["difficultyTick"]
+        self.spawnEnemyTick = config["game"]["spawnEnemyTick"]
+
+        backgroundImage = pygame.image.load("src/tiles/background.png")
+        self.hpTile = pygame.image.load("src/tiles/playerHP.png")
+        self.playerTile = pygame.image.load("src/tiles/player.png")
+        self.enemyTile = pygame.image.load("src/tiles/enemy.png")
+        self.playerShotTile = pygame.image.load("src/tiles/playerShot.png")
+        self.enemyShotTile = pygame.image.load("src/tiles/enemyShot.png")
+        sheet = pygame.image.load("src/tiles/explosion.png")
         for i in range(0, 11):
             self.explosionFrames.append(sheet.subsurface(96*i, 0, 96, 96))
 
+        pygame.mixer.music.load("src/sounds/backgroundMusic.wav")
+        self.shotSound = pygame.mixer.Sound("src/sounds/shotSound.wav")
+        self.blowSound = pygame.mixer.Sound("src/sounds/blowSound.wav")
+
+        self.background = pygame.transform.scale(backgroundImage, self.resolution)
 
     def __init__(self, application):
         self.loadConfig()
@@ -83,7 +87,6 @@ class Game:
                         bulletTile=self.playerShotTile)
         self.gameObjects.append(player)
 
-        pygame.mixer.music.load("backgroundMusic.wav")
         # Infinitely plays background music
         pygame.mixer.music.play(-1)
         
@@ -95,7 +98,7 @@ class Game:
                 # In case of "keyUp"
                 deltaX = 0
                 deltaY = 0
-                
+
                 # Terminal exiting from game
                 if event.type == pygame.QUIT:
                     exit()
