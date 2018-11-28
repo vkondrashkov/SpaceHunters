@@ -19,6 +19,7 @@ class Player(Character):
 
 
     def shoot(self):
+        self.game.shotSound.play()
         bullet = Bullet(self.game, self.centerX, self.y - 10, self.centerX, 0, 100, owner=self, damage=self.damage, color=self.bulletTile)
         self.game.gameObjects.append(bullet)
 
@@ -42,6 +43,7 @@ class Player(Character):
         self.draw()
     
     def die(self):
+        self.game.blowSound.play()
         Character.die(self)
         self.game.end()
     

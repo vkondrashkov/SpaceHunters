@@ -32,11 +32,13 @@ class Enemy(Character):
         if self.shootRateTick > 0:
             self.shootRateTick -= 1
             return
+        self.game.shotSound.play()
         bullet = Bullet(self.game, self.centerX, self.borderBottom + 10, self.centerX, self.game.screenHeight, 100, owner=self, color=self.bulletTile)
         self.game.gameObjects.append(bullet)
         self.shootRateTick = 120
     
     def die(self):
+        self.game.blowSound.play()
         Character.die(self)
         self.game.score += self.score
 
