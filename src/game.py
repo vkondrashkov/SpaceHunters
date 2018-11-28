@@ -49,18 +49,24 @@ class Game:
         self.difficultyTick = config["game"]["difficultyTick"]
         self.difficultyGrade = 1
         self.score = 0
+        self.explosionFrames = []
+        sheet = pygame.image.load("explosion.png")
+        for i in range(0, 11):
+            self.explosionFrames.append(sheet.subsurface(96*i, 0, 96, 96))
+
 
     def __init__(self):
         self.loadConfig()
         display = pygame.display.set_mode(self.resolution)
         pygame.display.set_caption(self.caption)
-
         self.__display = display
         
 
     def start(self):
         self.running = True
-
+        self.loop()
+        
+    def loop(self):
         clock = pygame.time.Clock()
         player = Player(self,
                         x=(config["game"]["width"] - config["player"]["width"]) / 2, 
@@ -70,13 +76,13 @@ class Game:
                         velocity=config["player"]["velocity"], 
                         healthPoints=config["player"]["healthPoints"], 
                         damage=config["player"]["damage"], 
-                        bulletsPerShot=config["player"]["bulletsPerShot"],
                         tile=self.playerTile,
                         bulletTile=self.playerShotTile)
         self.gameObjects.append(player)
 
         pygame.mixer.music.load("backgroundMusic.wav")
         pygame.mixer.music.play(-1)
+        
         while self.running:
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
@@ -126,7 +132,7 @@ class Game:
         else:
             for i in range(0, player.healthPoints):
                 self.display.blit(self.hpTile, (10 + i*35, self.screenHeight - 30))
-
+    
     def end(self):
         self.running = False
         self.gameObjects = []
@@ -148,7 +154,6 @@ class Game:
                                         velocity=config["enemy"]["velocity"], 
                                         healthPoints=int(config["enemy"]["healthPoints"] + self.difficultyGrade), 
                                         damage=int(config["enemy"]["damage"] * self.difficultyGrade), 
-                                        bulletsPerShot=config["enemy"]["bulletsPerShot"],
                                         tile=self.enemyTile,
                                         bulletTile=self.enemyShotTile,
                                         score=int(config["enemy"]["score"] * self.difficultyGrade),

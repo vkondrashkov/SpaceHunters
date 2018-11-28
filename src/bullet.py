@@ -2,6 +2,7 @@ import pygame
 
 from src.movable import Movable
 from src.drawable import Drawable
+from src.explosion import Explosion
 
 class Bullet(Movable):
     @property
@@ -61,6 +62,10 @@ class Bullet(Movable):
                 continue
             if type(entity) is Bullet:
                 continue
+            if type(entity) is Explosion:
+                continue
+            entityBordersX = range(entity.borderLeft, entity.borderRight)
+            entityBordersY = range(entity.borderTop, entity.borderBottom)
             if (self.x >= entity.borderLeft and self.x <= entity.borderRight) and (self.y >= entity.borderTop and self.y <= entity.borderBottom):
                 entity.hurt(self.damage)
                 self.game.deleteEntity(self)

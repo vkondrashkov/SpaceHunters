@@ -4,11 +4,17 @@ from src.character import Character
 from src.bullet import Bullet
 
 class Player(Character):
-    playerTile = pygame.image.load("player.png")
-
-    def __init__(self, game, x, y, width, height, 
-                velocity, healthPoints, damage, 
-                bulletsPerShot, tile, bulletTile):
+    def __init__(self, 
+                game, 
+                x, 
+                y, 
+                width, 
+                height, 
+                velocity, 
+                healthPoints, 
+                damage, 
+                tile, 
+                bulletTile):
         Character.__init__(self, game, 
                                 x=x, 
                                 y=y, 
@@ -17,10 +23,9 @@ class Player(Character):
                                 velocity=velocity, 
                                 healthPoints=healthPoints, 
                                 damage=damage, 
-                                bulletsPerShot=bulletsPerShot, 
                                 tile=tile)
         self.bulletTile = bulletTile
-        self.playerTile = pygame.transform.scale(self.playerTile, (self.width, self.height))
+        self.playerTile = pygame.transform.scale(tile, (self.width, self.height))
         self.shotTick = 0
 
 
@@ -62,8 +67,6 @@ class Player(Character):
                 continue
             entityBordersX = range(entity.borderLeft, entity.borderRight)
             entityBordersY = range(entity.borderTop, entity.borderBottom)
-            playerBordersX = range(self.borderLeft, self.borderRight)
-            playerBordersY = range(self.borderTop, self.borderBottom)
             if ((self.borderLeft in entityBordersX or self.borderRight in entityBordersX) \
                 and (self.borderTop in entityBordersY or self.borderBottom in entityBordersY)):
                 self.game.deleteEntity(self)
