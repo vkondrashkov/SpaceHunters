@@ -15,6 +15,8 @@ class Game:
     hpTile = pygame.image.load("playerHP.png")
     playerTile = pygame.image.load("player.png")
     enemyTile = pygame.image.load("enemy.png")
+    shotSound = pygame.mixer.Sound("shotSound.wav")
+    blowSound = pygame.mixer.Sound("blowSound.wav")
     score = 0
 
     @property
@@ -116,8 +118,9 @@ class Game:
 
     def displayStats(self, player):
         scoreString = "Score: " + str(self.score)
+        scoreStringWidth, _ = self.gameFont.size(scoreString)
         score = self.gameFont.render(scoreString, False, (250, 250, 250))
-        self.display.blit(score, (10, 10))
+        self.display.blit(score, (self.screenWidth - scoreStringWidth - 10, self.screenHeight - 25))
         if player.healthPoints > 5:
             hpString = str(player.healthPoints) + "x"
             textWidth, _ = self.gameFont.size(hpString)
