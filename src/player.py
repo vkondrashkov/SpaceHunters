@@ -21,9 +21,11 @@ class Player(Character):
                                 tile=tile)
         self.bulletTile = bulletTile
         self.playerTile = pygame.transform.scale(self.playerTile, (self.width, self.height))
+        self.shotTick = 0
 
 
     def shoot(self):
+        self.shotTick = 5
         self.game.shotSound.play()
         bullet = Bullet(self.game, self.centerX, self.y - 10, self.centerX, 0, 100, owner=self, damage=self.damage, tile=self.bulletTile)
         self.game.gameObjects.append(bullet)
