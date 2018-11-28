@@ -19,7 +19,13 @@ class Drawable(Object):
         return self.__color
 
     @abstractmethod
-    def __init__(self, game, x=0, y=0, width=0, height=0, color=None):
+    def __init__(self, 
+                game, 
+                x=0, 
+                y=0, 
+                width=0, 
+                height=0, 
+                color=None):
         Object.__init__(self, x, y, width, height)
         self.__game = game
         self.__color = color

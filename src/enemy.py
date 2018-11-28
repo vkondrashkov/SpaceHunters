@@ -2,10 +2,12 @@ import pygame
 
 from src.character import Character
 from src.bullet import Bullet
+from src.explosion import Explosion
 
 class Enemy(Character):
 
-    def __init__(self, game, 
+    def __init__(self, 
+                game, 
                 x, 
                 y, 
                 width, 
@@ -13,7 +15,6 @@ class Enemy(Character):
                 velocity, 
                 healthPoints, 
                 damage, 
-                bulletsPerShot,
                 tile,
                 bulletTile,
                 score,
@@ -26,7 +27,6 @@ class Enemy(Character):
                                 velocity=velocity, 
                                 healthPoints=healthPoints, 
                                 damage=damage, 
-                                bulletsPerShot=bulletsPerShot, 
                                 tile=tile)
         self.shotRateTick = shotRateTick
         self.shootRateTick = 30
@@ -44,6 +44,8 @@ class Enemy(Character):
     
     def die(self):
         self.game.blowSound.play()
+        explosion = Explosion(self.game, self.x, self.y, self.width, self.height, self.game.explosionFrames, 5)
+        self.game.gameObjects.append(explosion)
         Character.die(self)
         self.game.score += self.score
 

@@ -24,13 +24,11 @@ class Character(Movable):
                 velocity=0, 
                 healthPoints=0, 
                 damage=0, 
-                bulletsPerShot=0,
                 color=None, 
                 tile=None):
         Movable.__init__(self, game, x, y, width, height, color, velocity)
         self.healthPoints = healthPoints
         self.__damage = damage
-        self.__bulletsPerShot = bulletsPerShot
         self.__tile = tile
 
     @abstractmethod
