@@ -21,6 +21,7 @@ class Explosion(Drawable):
                 tick):
         Drawable.__init__(self, game, x, y, int(width * 1.25), int(height * 1.25))
         self.__frames = frames
+        # Animation tick, delay between frames
         self.__tick = tick
         self.currentTick = 0
     
@@ -30,6 +31,9 @@ class Explosion(Drawable):
     
     def draw(self):
         index = self.currentTick // self.tick
+        
+        # If animation frames have ended, 
+        # delete animated object
         if index == len(self.frames):
             self.game.deleteEntity(self)
             return

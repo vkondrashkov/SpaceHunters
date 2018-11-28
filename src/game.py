@@ -34,6 +34,8 @@ class Game:
     def caption(self):
         return self.__caption
     
+    # Preloads all the necessary constants 
+    # before game starts
     def loadConfig(self):
         self.gameFont = pygame.font.Font(None, 30)
         self.gameObjects = []
@@ -66,7 +68,7 @@ class Game:
     def start(self):
         self.running = True
         self.loop()
-        
+    
     def loop(self):
         clock = pygame.time.Clock()
         player = Player(self,
@@ -82,13 +84,19 @@ class Game:
         self.gameObjects.append(player)
 
         pygame.mixer.music.load("backgroundMusic.wav")
+        # Infinitely plays background music
         pygame.mixer.music.play(-1)
         
+        deltaX = 0
+        deltaY = 0
         while self.running:
-            deltaX = 0
-            deltaY = 0
             for event in pygame.event.get():
+                # Resets delta's for any event
+                # In case of "keyUp"
+                deltaX = 0
+                deltaY = 0
                 
+                # Terminal exiting from game
                 if event.type == pygame.QUIT:
                     exit()
                 keys = pygame.key.get_pressed()
@@ -104,27 +112,43 @@ class Game:
                 if keys[pygame.K_SPACE]:
                     if player.shotTick == 0:
                         player.shoot()
+
+            # Cycling spawn enemy ticks,
+            # difficulty raising ticks and
+            # player shot ticks (to avoid shooting bug)
             self.cycleSpawnEnemy()
             self.cycleDifficulty()
             self.cyclePlayerShot(player)
+            
+            # Drawing all the objects
+            # Firstly drawing characters and only then
+            # drawing HUD (to avoid overlay)
             self.display.blit(self.background, (0, 0))
             player.move(deltaX, deltaY)
             for object in self.gameObjects:
                 object.update()
             self.displayStats(player)
             pygame.display.update()
+
             clock.tick(config["game"]["fps"])
 
     def displayStats(self, player):
+        # Displays current player's score
         scoreString = "Score: " + str(self.score)
         scoreStringWidth, scoreStringHeigt = self.gameFont.size(scoreString)
         score = self.gameFont.render(scoreString, False, (250, 250, 250))
         self.display.blit(score, (self.screenWidth - scoreStringWidth - 10, self.screenHeight - scoreStringHeigt - 5))
         
+        # Displays current difficulty and sets
+        # its position relatively to Score
         difficultyString = "Level: " + str(int(self.difficultyGrade))
         _, difficultyStringWidth = self.gameFont.size(difficultyString)
         difficulty = self.gameFont.render(difficultyString, False, (250, 250, 250))
         self.display.blit(difficulty, (self.screenWidth - scoreStringWidth - 10, self.screenHeight - scoreStringHeigt - 30))
+
+        # If player's health more than 5
+        # simply displays it's like value (6x)
+        # otherwise displays Player icons equals to HP
         if player.healthPoints > 5:
             hpString = str(player.healthPoints) + "x"
             textWidth, _ = self.gameFont.size(hpString)
@@ -139,7 +163,6 @@ class Game:
         self.running = False
         pygame.mixer.music.stop()
         self.gameObjects = []
-        self.application.menu.running = True
 
     def deleteEntity(self, obj):
         self.gameObjects.remove(obj)
@@ -148,6 +171,9 @@ class Game:
         if self.spawnEnemyTick > 0:
             self.spawnEnemyTick -= 1
         else:
+            # Generates random horizontal position
+            # considering it's width to avoid generating
+            # object beyond Screen borders.
             x = randint(0, self.screenWidth - config["enemy"]["width"])
             y = 0
             self.gameObjects.append(Enemy(self, 
@@ -169,7 +195,7 @@ class Game:
             self.difficultyTick -= 1
         else:
             self.difficultyGrade += 0.25
-            self.difficultyTick = 240 # temporary
+            self.difficultyTick = config["game"]["difficultyTick"]
     
     def cyclePlayerShot(self, player):
         if player.shotTick > 0:
