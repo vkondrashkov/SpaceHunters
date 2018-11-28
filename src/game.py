@@ -11,8 +11,12 @@ pygame.init()
 class Game:
 
     @property
+    def application(self):
+        return self.__application
+
+    @property
     def display(self):
-        return self.__display
+        return self.application.display
     
     @property
     def screenWidth(self):
@@ -55,13 +59,10 @@ class Game:
             self.explosionFrames.append(sheet.subsurface(96*i, 0, 96, 96))
 
 
-    def __init__(self):
+    def __init__(self, application):
         self.loadConfig()
-        display = pygame.display.set_mode(self.resolution)
-        pygame.display.set_caption(self.caption)
-        self.__display = display
+        self.__application = application
         
-
     def start(self):
         self.running = True
         self.loop()
@@ -84,11 +85,12 @@ class Game:
         pygame.mixer.music.play(-1)
         
         while self.running:
+            deltaX = 0
+            deltaY = 0
             for event in pygame.event.get():
+                
                 if event.type == pygame.QUIT:
                     exit()
-                deltaX = 0
-                deltaY = 0
                 keys = pygame.key.get_pressed()
                 velocity = config["player"]["velocity"]
                 if keys[pygame.K_LEFT] or keys[pygame.K_a]:
@@ -135,7 +137,9 @@ class Game:
     
     def end(self):
         self.running = False
+        pygame.mixer.music.stop()
         self.gameObjects = []
+        self.application.menu.running = True
 
     def deleteEntity(self, obj):
         self.gameObjects.remove(obj)
