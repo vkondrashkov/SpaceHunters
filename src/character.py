@@ -17,7 +17,8 @@ class Character(Movable):
     @abstractmethod
     def __init__(self, 
                 game, 
-                x=0, y=0, 
+                x=0, 
+                y=0, 
                 width=0, 
                 height=0, 
                 velocity=0, 
@@ -43,10 +44,6 @@ class Character(Movable):
     @abstractmethod
     def shot(self):
         pass
-
-    @abstractmethod
-    def move(self, deltaX, deltaY):
-        Movable.move(self, deltaX, deltaY)
     
     @abstractmethod
     def draw(self):
