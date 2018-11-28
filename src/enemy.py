@@ -16,7 +16,8 @@ class Enemy(Character):
                 bulletsPerShot,
                 tile,
                 bulletTile,
-                score):
+                score,
+                shotRateTick):
         Character.__init__(self, game, 
                                 x=x, 
                                 y=y, 
@@ -27,6 +28,7 @@ class Enemy(Character):
                                 damage=damage, 
                                 bulletsPerShot=bulletsPerShot, 
                                 tile=tile)
+        self.shotRateTick = shotRateTick
         self.shootRateTick = 30
         self.bulletTile = bulletTile
         self.score = score
@@ -38,7 +40,7 @@ class Enemy(Character):
         self.game.shotSound.play()
         bullet = Bullet(self.game, self.centerX, self.borderBottom + 10, self.centerX, self.game.screenHeight, 100, owner=self, tile=self.bulletTile, damage=self.damage)
         self.game.gameObjects.append(bullet)
-        self.shootRateTick = 120
+        self.shootRateTick = self.shotRateTick
     
     def die(self):
         self.game.blowSound.play()

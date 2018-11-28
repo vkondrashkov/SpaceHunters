@@ -109,9 +109,14 @@ class Game:
 
     def displayStats(self, player):
         scoreString = "Score: " + str(self.score)
-        scoreStringWidth, _ = self.gameFont.size(scoreString)
+        scoreStringWidth, scoreStringHeigt = self.gameFont.size(scoreString)
         score = self.gameFont.render(scoreString, False, (250, 250, 250))
-        self.display.blit(score, (self.screenWidth - scoreStringWidth - 10, self.screenHeight - 25))
+        self.display.blit(score, (self.screenWidth - scoreStringWidth - 10, self.screenHeight - scoreStringHeigt - 5))
+        
+        difficultyString = "Level: " + str(int(self.difficultyGrade))
+        _, difficultyStringWidth = self.gameFont.size(difficultyString)
+        difficulty = self.gameFont.render(difficultyString, False, (250, 250, 250))
+        self.display.blit(difficulty, (self.screenWidth - scoreStringWidth - 10, self.screenHeight - scoreStringHeigt - 30))
         if player.healthPoints > 5:
             hpString = str(player.healthPoints) + "x"
             textWidth, _ = self.gameFont.size(hpString)
@@ -141,12 +146,13 @@ class Game:
                                         width=config["enemy"]["width"], 
                                         height=config["enemy"]["height"], 
                                         velocity=config["enemy"]["velocity"], 
-                                        healthPoints=int(config["enemy"]["healthPoints"] * self.difficultyGrade), 
+                                        healthPoints=int(config["enemy"]["healthPoints"] + self.difficultyGrade), 
                                         damage=int(config["enemy"]["damage"] * self.difficultyGrade), 
                                         bulletsPerShot=config["enemy"]["bulletsPerShot"],
                                         tile=self.enemyTile,
                                         bulletTile=self.enemyShotTile,
-                                        score=int(config["enemy"]["score"] * self.difficultyGrade)))
+                                        score=int(config["enemy"]["score"] * self.difficultyGrade),
+                                        shotRateTick=int(config["enemy"]["shotRateTick"] - (self.difficultyGrade * 5))))
             self.spawnEnemyTick = config["game"]["spawnEnemyTick"]
     
     def cycleDifficulty(self):
