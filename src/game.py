@@ -9,17 +9,6 @@ from src.enemy import Enemy
 pygame.init()
 
 class Game:
-    gameFont = pygame.font.Font(None, 30)
-    gameObjects = []
-    background = pygame.image.load("background.png")
-    hpTile = pygame.image.load("playerHP.png")
-    playerTile = pygame.image.load("player.png")
-    enemyTile = pygame.image.load("enemy.png")
-    shotSound = pygame.mixer.Sound("shotSound.wav")
-    blowSound = pygame.mixer.Sound("blowSound.wav")
-    playerShotTile = pygame.image.load("playerShot.png")
-    enemyShotTile = pygame.image.load("enemyShot.png")
-    score = 0
 
     @property
     def display(self):
@@ -42,6 +31,8 @@ class Game:
         return self.__caption
     
     def loadConfig(self):
+        self.gameFont = pygame.font.Font(None, 30)
+        self.gameObjects = []
         self.__screenWidth = config["game"]["width"]
         self.__screenHeight = config["game"]["height"]
         backgroundImage = pygame.image.load("background.png")
@@ -55,7 +46,9 @@ class Game:
         self.playerShotTile = pygame.image.load("playerShot.png")
         self.enemyShotTile = pygame.image.load("enemyShot.png")
         self.spawnEnemyTick = config["game"]["spawnEnemyTick"]
-        self.difficultyTick = 60
+        self.difficultyTick = config["game"]["difficultyTick"]
+        self.difficultyGrade = 1
+        self.score = 0
 
     def __init__(self):
         self.loadConfig()
@@ -101,12 +94,11 @@ class Game:
                 if keys[pygame.K_DOWN] or keys[pygame.K_s]:
                     deltaY = velocity
                 if keys[pygame.K_SPACE]:
-                    player.shoot()
+                    if player.shotTick == 0:
+                        player.shoot()
             self.cycleSpawnEnemy()
-            if self.difficultyTick > 0:
-                self.difficultyTick -= 1
-            else:
-                self.difficultyTick = 60
+            self.cycleDifficulty()
+            self.cyclePlayerShot(player)
             self.display.blit(self.background, (0, 0))
             player.move(deltaX, deltaY)
             for object in self.gameObjects:
@@ -149,11 +141,21 @@ class Game:
                                         width=config["enemy"]["width"], 
                                         height=config["enemy"]["height"], 
                                         velocity=config["enemy"]["velocity"], 
-                                        healthPoints=config["enemy"]["healthPoints"], 
-                                        damage=config["enemy"]["damage"], 
+                                        healthPoints=int(config["enemy"]["healthPoints"] * self.difficultyGrade), 
+                                        damage=int(config["enemy"]["damage"] * self.difficultyGrade), 
                                         bulletsPerShot=config["enemy"]["bulletsPerShot"],
                                         tile=self.enemyTile,
                                         bulletTile=self.enemyShotTile,
-                                        score=config["enemy"]["score"]))
+                                        score=int(config["enemy"]["score"] * self.difficultyGrade)))
             self.spawnEnemyTick = config["game"]["spawnEnemyTick"]
     
+    def cycleDifficulty(self):
+        if self.difficultyTick > 0:
+            self.difficultyTick -= 1
+        else:
+            self.difficultyGrade += 0.25
+            self.difficultyTick = 240 # temporary
+    
+    def cyclePlayerShot(self, player):
+        if player.shotTick > 0:
+            player.shotTick -= 1

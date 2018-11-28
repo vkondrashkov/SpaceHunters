@@ -36,7 +36,7 @@ class Enemy(Character):
             self.shootRateTick -= 1
             return
         self.game.shotSound.play()
-        bullet = Bullet(self.game, self.centerX, self.borderBottom + 10, self.centerX, self.game.screenHeight, 100, owner=self, tile=self.bulletTile)
+        bullet = Bullet(self.game, self.centerX, self.borderBottom + 10, self.centerX, self.game.screenHeight, 100, owner=self, tile=self.bulletTile, damage=self.damage)
         self.game.gameObjects.append(bullet)
         self.shootRateTick = 120
     

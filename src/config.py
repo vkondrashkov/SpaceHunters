@@ -5,7 +5,8 @@ config = {
         "width": 350,
         "height": 640,
         "fps": 60,
-        "spawnEnemyTick": 120
+        "spawnEnemyTick": 120,
+        "difficultyTick": 240
     },
     "player": {
         "healthPoints": 10,
