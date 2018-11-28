@@ -20,11 +20,11 @@ class Character(Movable):
                 x=0, y=0, 
                 width=0, 
                 height=0, 
-                color=None, 
                 velocity=0, 
                 healthPoints=0, 
                 damage=0, 
                 bulletsPerShot=0,
+                color=None, 
                 tile=None):
         Movable.__init__(self, game, x, y, width, height, color, velocity)
         self.healthPoints = healthPoints

@@ -1,7 +1,7 @@
 config = {
     "game": {
         "caption": "SpaceHunters",
-        "version": "0.2.3 alpha",
+        "version": "0.2.4 alpha",
         "width": 350,
         "height": 640,
         "fps": 60,
@@ -14,7 +14,6 @@ config = {
         "bulletsPerShot": 1,
         "width": 75,
         "height": 55,
-        "color": (0, 100, 0),
         "bulletColor": (255, 255, 255)
     },
     "enemy": {
@@ -24,9 +23,8 @@ config = {
         "bulletsPerShot": 1,
         "width": 75,
         "height": 60,
-        "color": (100, 0, 0),
         "bulletColor": (241, 196, 15),
-        "score": 3
+        "score": 1
     },
     "boss": {
         "healthPoints": 50,
