@@ -3,6 +3,8 @@ from abc import ABCMeta, abstractmethod
 class Object:
     __metaclass__ = ABCMeta
 
+    # Defines all the borders for object to detect 
+    # later whether object's border collides with something
     @property
     def borderTop(self):
         return int(self.y)
@@ -42,6 +44,8 @@ class Object:
         self.__width = width
         self.__height = height
     
+    # All objects have abstract method to update 
+    # object's state every game tick.
     @abstractmethod
     def update(self):
         pass

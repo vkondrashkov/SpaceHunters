@@ -28,24 +28,28 @@ class Enemy(Character):
                                 healthPoints=healthPoints, 
                                 damage=damage, 
                                 tile=tile)
+        # Shot rate tick, delay between enemy's shots
         self.shotRateTick = shotRateTick
-        self.shootRateTick = 30
+        self.currentTick = 30
         self.bulletTile = bulletTile
         self.score = score
 
     def shoot(self):
-        if self.shootRateTick > 0:
-            self.shootRateTick -= 1
+        if self.currentTick > 0:
+            self.currentTick -= 1
             return
         self.game.shotSound.play()
         bullet = Bullet(self.game, self.centerX, self.borderBottom + 10, self.centerX, self.game.screenHeight, 100, owner=self, tile=self.bulletTile, damage=self.damage)
         self.game.gameObjects.append(bullet)
-        self.shootRateTick = self.shotRateTick
+        self.currentTick = self.shotRateTick
     
     def die(self):
+        # Creates animated Explosion object at the
+        # same positions as enemy was
         self.game.blowSound.play()
         explosion = Explosion(self.game, self.x, self.y, self.width, self.height, self.game.explosionFrames, 5)
         self.game.gameObjects.append(explosion)
+        # Removes Enemy object from objects list
         Character.die(self)
         self.game.score += self.score
 

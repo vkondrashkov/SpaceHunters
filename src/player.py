@@ -2,6 +2,7 @@ import pygame
 
 from src.character import Character
 from src.bullet import Bullet
+from src.explosion import Explosion
 
 class Player(Character):
     def __init__(self, 
@@ -30,14 +31,20 @@ class Player(Character):
 
 
     def shoot(self):
+        # Sets player's shot tick to avoid
+        # infinitely shooting
         self.shotTick = 5
         self.game.shotSound.play()
-        bullet = Bullet(self.game, self.centerX, self.y - 10, self.centerX, 0, 100, owner=self, damage=self.damage, tile=self.bulletTile)
+        bullet = Bullet(self.game, self.centerX, self.y - 10, 
+                        self.centerX, 0, 100, 
+                        owner=self, damage=self.damage, tile=self.bulletTile)
         self.game.gameObjects.append(bullet)
 
     def move(self, deltaX, deltaY):
         Character.move(self, deltaX, deltaY)
         
+        # Defines vertical and horizontal borders
+        # for player in order to make "playground"
         heightBounds = self.game.screenHeight / 2
         if self.y <= heightBounds and deltaY < 0:
             self.y = heightBounds
@@ -61,9 +68,19 @@ class Player(Character):
     
     def checkCollision(self):
         for entity in self.game.gameObjects:
+            # In Objects list stored all entities
+            # and current bullet also, so avoid it.
             if entity == self:
                 continue
+            
+            # Ignore Bullet objects because
+            # they have own behavior on collision
             if type(entity) is Bullet:
+                continue
+            
+            # Player can't be hurted from animated
+            # object, so ignore it.
+            if type(entity) is Explosion:
                 continue
             entityBordersX = range(entity.borderLeft, entity.borderRight)
             entityBordersY = range(entity.borderTop, entity.borderBottom)

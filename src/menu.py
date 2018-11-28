@@ -14,6 +14,7 @@ class Menu:
         self.__application = application
         self.menuItems = []
 
+        # Generating title and all the menu buttons
         self.titleString = "SpaceHunters"
         titleWidth, titleHeight = self.font.size(self.titleString)
         # Actually title X and Y coordinate
@@ -86,17 +87,19 @@ class Menu:
             pygame.display.update()
             clock.tick(config["game"]["fps"])
     
+    # TODO: Options menu to change
+    # game's properties
     def options(self):
         pass
     
     def start(self):
-        self.running = False
         self.application.game.start()
 
     def exit(self):
-        exit()
+        self.running = False
 
     def draw(self):
+        # Temporary background, needs to be changed
         self.application.display.fill((0, 0, 0))
         title = self.font.render(self.titleString, False, (250, 250, 250))
         self.application.display.blit(title, (self.titleHorizontalOffset, self.titleVerticalOffset))
