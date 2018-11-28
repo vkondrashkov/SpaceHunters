@@ -7,20 +7,25 @@ class Player(Character):
     playerTile = pygame.image.load("player.png")
 
     def __init__(self, game, x, y, width, height, 
-                color, velocity, healthPoints, 
-                damage, bulletsPerShot, tile,
-                bulletTile):
-        Character.__init__(self, game, x, y, 
-                                width, height, color, 
-                                velocity, healthPoints, 
-                                damage, bulletsPerShot, tile)
+                velocity, healthPoints, damage, 
+                bulletsPerShot, tile, bulletTile):
+        Character.__init__(self, game, 
+                                x=x, 
+                                y=y, 
+                                width=width, 
+                                height=height,
+                                velocity=velocity, 
+                                healthPoints=healthPoints, 
+                                damage=damage, 
+                                bulletsPerShot=bulletsPerShot, 
+                                tile=tile)
         self.bulletTile = bulletTile
         self.playerTile = pygame.transform.scale(self.playerTile, (self.width, self.height))
 
 
     def shoot(self):
         self.game.shotSound.play()
-        bullet = Bullet(self.game, self.centerX, self.y - 10, self.centerX, 0, 100, owner=self, damage=self.damage, color=self.bulletTile)
+        bullet = Bullet(self.game, self.centerX, self.y - 10, self.centerX, 0, 100, owner=self, damage=self.damage, tile=self.bulletTile)
         self.game.gameObjects.append(bullet)
 
     def move(self, deltaX, deltaY):

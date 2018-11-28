@@ -17,6 +17,8 @@ class Game:
     enemyTile = pygame.image.load("enemy.png")
     shotSound = pygame.mixer.Sound("shotSound.wav")
     blowSound = pygame.mixer.Sound("blowSound.wav")
+    playerShotTile = pygame.image.load("playerShot.png")
+    enemyShotTile = pygame.image.load("enemyShot.png")
     score = 0
 
     @property
@@ -34,18 +36,34 @@ class Game:
     @property
     def resolution(self):
         return (self.screenWidth, self.screenHeight)
-
-    def __init__(self):
+    
+    @property
+    def caption(self):
+        return self.__caption
+    
+    def loadConfig(self):
         self.__screenWidth = config["game"]["width"]
         self.__screenHeight = config["game"]["height"]
-        self.background = pygame.transform.scale(self.background, self.resolution)
-
-        display = pygame.display.set_mode(self.resolution)
-        pygame.display.set_caption(config["game"]["caption"])
-
-        self.__display = display
+        backgroundImage = pygame.image.load("background.png")
+        self.background = pygame.transform.scale(backgroundImage, self.resolution)
+        self.__caption = config["game"]["caption"]
+        self.hpTile = pygame.image.load("playerHP.png")
+        self.playerTile = pygame.image.load("player.png")
+        self.enemyTile = pygame.image.load("enemy.png")
+        self.shotSound = pygame.mixer.Sound("shotSound.wav")
+        self.blowSound = pygame.mixer.Sound("blowSound.wav")
+        self.playerShotTile = pygame.image.load("playerShot.png")
+        self.enemyShotTile = pygame.image.load("enemyShot.png")
         self.spawnEnemyTick = config["game"]["spawnEnemyTick"]
         self.difficultyTick = 60
+
+    def __init__(self):
+        self.loadConfig()
+        display = pygame.display.set_mode(self.resolution)
+        pygame.display.set_caption(self.caption)
+
+        self.__display = display
+        
 
     def start(self):
         self.running = True
@@ -56,14 +74,14 @@ class Game:
                         y=config["game"]["height"] - config["player"]["height"] - 100, 
                         width=config["player"]["width"], 
                         height=config["player"]["height"], 
-                        color=config["player"]["color"], 
                         velocity=config["player"]["velocity"], 
                         healthPoints=config["player"]["healthPoints"], 
                         damage=config["player"]["damage"], 
                         bulletsPerShot=config["player"]["bulletsPerShot"],
                         tile=self.playerTile,
-                        bulletTile=config["player"]["bulletColor"])
+                        bulletTile=self.playerShotTile)
         self.gameObjects.append(player)
+
         pygame.mixer.music.load("backgroundMusic.wav")
         pygame.mixer.music.play(-1)
         while self.running:
@@ -84,26 +102,7 @@ class Game:
                     deltaY = velocity
                 if keys[pygame.K_SPACE]:
                     player.shoot()
-            if self.spawnEnemyTick > 0:
-                self.spawnEnemyTick -= 1
-            else:
-                x = randint(0, self.screenWidth - config["enemy"]["width"])
-                y = 0
-                self.gameObjects.append(Enemy(self, 
-                                            x=x, 
-                                            y=y, 
-                                            target=player,
-                                            width=config["enemy"]["width"], 
-                                            height=config["enemy"]["height"], 
-                                            color=config["colors"]["red"], 
-                                            velocity=config["enemy"]["velocity"], 
-                                            healthPoints=config["enemy"]["healthPoints"], 
-                                            damage=config["enemy"]["damage"], 
-                                            bulletsPerShot=config["enemy"]["bulletsPerShot"],
-                                            tile=self.enemyTile,
-                                            bulletTile=config["enemy"]["bulletColor"],
-                                            score=config["enemy"]["score"]))
-                self.spawnEnemyTick = config["game"]["spawnEnemyTick"]
+            self.cycleSpawnEnemy()
             if self.difficultyTick > 0:
                 self.difficultyTick -= 1
             else:
@@ -137,4 +136,24 @@ class Game:
 
     def deleteEntity(self, obj):
         self.gameObjects.remove(obj)
-            
+    
+    def cycleSpawnEnemy(self):
+        if self.spawnEnemyTick > 0:
+            self.spawnEnemyTick -= 1
+        else:
+            x = randint(0, self.screenWidth - config["enemy"]["width"])
+            y = 0
+            self.gameObjects.append(Enemy(self, 
+                                        x=x, 
+                                        y=y, 
+                                        width=config["enemy"]["width"], 
+                                        height=config["enemy"]["height"], 
+                                        velocity=config["enemy"]["velocity"], 
+                                        healthPoints=config["enemy"]["healthPoints"], 
+                                        damage=config["enemy"]["damage"], 
+                                        bulletsPerShot=config["enemy"]["bulletsPerShot"],
+                                        tile=self.enemyTile,
+                                        bulletTile=self.enemyShotTile,
+                                        score=config["enemy"]["score"]))
+            self.spawnEnemyTick = config["game"]["spawnEnemyTick"]
+    
