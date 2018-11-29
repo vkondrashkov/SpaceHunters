@@ -1,7 +1,7 @@
 import pygame
 
 from abc import ABCMeta, abstractmethod
-from src.object import Object
+from src.entities.object import Object
 
 class Drawable(Object):
     __metaclass__ = ABCMeta

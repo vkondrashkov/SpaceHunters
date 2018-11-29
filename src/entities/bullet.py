@@ -1,8 +1,8 @@
 import pygame
 
-from src.movable import Movable
-from src.drawable import Drawable
-from src.explosion import Explosion
+from src.entities.movable import Movable
+from src.entities.drawable import Drawable
+from src.entities.explosion import Explosion
 
 class Bullet(Movable):
     @property

@@ -1,7 +1,7 @@
 import pygame
 
 from abc import ABCMeta, abstractmethod
-from src.movable import Movable
+from src.entities.movable import Movable
 
 class Character(Movable):
     __metaclass__ = ABCMeta

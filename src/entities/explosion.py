@@ -1,6 +1,6 @@
 import pygame
 
-from src.drawable import Drawable
+from src.entities.drawable import Drawable
 
 class Explosion(Drawable):
     @property
