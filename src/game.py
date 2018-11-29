@@ -2,9 +2,9 @@ import pygame
 from random import randint
 
 from src.config import config
-from src.player import Player
-from src.bullet import Bullet
-from src.enemy import Enemy
+from src.entities.player import Player
+from src.entities.bullet import Bullet
+from src.entities.enemy import Enemy
 
 pygame.init()
 

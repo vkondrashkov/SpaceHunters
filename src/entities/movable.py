@@ -1,7 +1,7 @@
 import pygame
 
 from abc import ABCMeta, abstractmethod
-from src.drawable import Drawable
+from src.entities.drawable import Drawable
 
 class Movable(Drawable):
     __metaclass__ = ABCMeta

@@ -1,8 +1,8 @@
 import pygame
 
-from src.character import Character
-from src.bullet import Bullet
-from src.explosion import Explosion
+from src.entities.character import Character
+from src.entities.bullet import Bullet
+from src.entities.explosion import Explosion
 
 class Player(Character):
     def __init__(self, 
