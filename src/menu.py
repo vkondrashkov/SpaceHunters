@@ -13,6 +13,8 @@ class Menu:
     def __init__(self, application):
         self.__application = application
         self.menuItems = []
+        backgroundImage = pygame.image.load("src/tiles/menuBackground.png")
+        self.background = pygame.transform.scale(backgroundImage, self.application.resolution)
 
         # Generating title and all the menu buttons
         self.titleString = "SpaceHunters"
@@ -99,8 +101,7 @@ class Menu:
         self.running = False
 
     def draw(self):
-        # Temporary background, needs to be changed
-        self.application.display.fill((0, 0, 0))
+        self.application.display.blit(self.background, (0, 0))
         title = self.font.render(self.titleString, False, (250, 250, 250))
         self.application.display.blit(title, (self.titleHorizontalOffset, self.titleVerticalOffset))
         for menuItem in self.menuItems:
