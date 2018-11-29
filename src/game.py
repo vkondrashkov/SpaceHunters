@@ -5,6 +5,8 @@ from src.config import config
 from src.entities.player import Player
 from src.entities.bullet import Bullet
 from src.entities.enemy import Enemy
+from src.entities.bonus import Bonus
+from src.entities.bonusType import BonusType
 
 pygame.init()
 
@@ -42,6 +44,7 @@ class Game:
         self.difficultyGrade = 1
         self.score = 0
         self.explosionFrames = []
+        self.bonusTiles = []
 
         self.__screenWidth = config["game"]["width"]
         self.__screenHeight = config["game"]["height"]
@@ -55,9 +58,13 @@ class Game:
         self.enemyTile = pygame.image.load("src/tiles/enemy.png")
         self.playerShotTile = pygame.image.load("src/tiles/playerShot.png")
         self.enemyShotTile = pygame.image.load("src/tiles/enemyShot.png")
+        self.bonusHealthTile = pygame.image.load("src/tiles/bonus_health.png")
+        self.bonusDamageTile = pygame.image.load("src/tiles/bonus_damage.png")
         sheet = pygame.image.load("src/tiles/explosion.png")
         for i in range(0, 11):
             self.explosionFrames.append(sheet.subsurface(96*i, 0, 96, 96))
+        self.bonusTiles.append(self.bonusHealthTile)
+        self.bonusTiles.append(self.bonusDamageTile)
 
         pygame.mixer.music.load("src/sounds/backgroundMusic.wav")
         self.shotSound = pygame.mixer.Sound("src/sounds/shotSound.wav")
@@ -72,6 +79,9 @@ class Game:
     def start(self):
         self.running = True
         self.gameObjects = []
+        self.difficultyTick = config["game"]["difficultyTick"]
+        self.spawnEnemyTick = config["game"]["spawnEnemyTick"]
+        self.spawnBonusTick = 240
         self.difficultyGrade = 1
         self.score = 0
         self.loop()
@@ -123,6 +133,7 @@ class Game:
             # difficulty raising ticks and
             # player shot ticks (to avoid shooting bug)
             self.cycleSpawnEnemy()
+            self.cycleSpawnBonus()
             self.cycleDifficulty()
             self.cyclePlayerShot(player)
             
@@ -227,3 +238,23 @@ class Game:
     def cyclePlayerShot(self, player):
         if player.shotTick > 0:
             player.shotTick -= 1
+    
+    def cycleSpawnBonus(self):
+        if self.spawnBonusTick > 0:
+            self.spawnBonusTick -= 1
+        else:
+            x = randint(0, self.screenWidth - 20)
+            y = 0
+            bonusChoice = randint(0, 1)
+            bonusType = None
+            if bonusChoice == 1:
+                bonusType = BonusType.damage
+            else:
+                bonusType = BonusType.health
+            self.gameObjects.append(Bonus(self,
+                                        x=x,
+                                        y=y,
+                                        velocity=5,
+                                        type=bonusType,
+                                        tile=self.bonusTiles[bonusChoice]))
+            self.spawnBonusTick = randint(240, 480)

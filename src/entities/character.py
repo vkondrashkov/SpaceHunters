@@ -5,10 +5,6 @@ from src.entities.movable import Movable
 
 class Character(Movable):
     __metaclass__ = ABCMeta
-
-    @property
-    def damage(self):
-        return self.__damage
     
     @property
     def tile(self):
@@ -28,7 +24,7 @@ class Character(Movable):
                 tile=None):
         Movable.__init__(self, game, x, y, width, height, color, velocity)
         self.healthPoints = healthPoints
-        self.__damage = damage
+        self.damage = damage
         self.__tile = tile
 
     @abstractmethod

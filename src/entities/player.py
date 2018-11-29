@@ -2,7 +2,7 @@ import pygame
 
 from src.entities.character import Character
 from src.entities.bullet import Bullet
-from src.entities.explosion import Explosion
+from src.entities.enemy import Enemy
 
 class Player(Character):
     def __init__(self, 
@@ -68,19 +68,7 @@ class Player(Character):
     
     def checkCollision(self):
         for entity in self.game.gameObjects:
-            # In Objects list stored all entities
-            # and current bullet also, so avoid it.
-            if entity == self:
-                continue
-            
-            # Ignore Bullet objects because
-            # they have own behavior on collision
-            if type(entity) is Bullet:
-                continue
-            
-            # Player can't be hurted from animated
-            # object, so ignore it.
-            if type(entity) is Explosion:
+            if entity != Enemy:
                 continue
             entityBordersX = range(entity.borderLeft, entity.borderRight)
             entityBordersY = range(entity.borderTop, entity.borderBottom)
