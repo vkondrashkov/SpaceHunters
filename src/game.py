@@ -74,7 +74,6 @@ class Game:
         self.gameObjects = []
         self.difficultyGrade = 1
         self.score = 0
-        self.explosionFrames = []
         self.loop()
     
     def loop(self):
