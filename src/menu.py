@@ -35,26 +35,26 @@ class Menu:
         self.startHorizontalBorders = range(int(startHorizontalOffset), int(startHorizontalOffset + startWidth))
         self.startButton = MenuItem(self.application.display, startHorizontalOffset, startVerticalOffset, startString, None)
 
-        optionsString = "Options"
-        optionsWidth, optionsHeight = self.font.size(optionsString)
-        # Actually options button X and Y coordinate
-        optionsVerticalOffset = startVerticalOffset + startHeight + 20
-        optionsHorizontalOffset = (self.application.screenWidth // 2) - (optionsWidth // 2)
-        self.optionsVerticalBorders = range(int(optionsVerticalOffset), int(optionsVerticalOffset + optionsHeight))
-        self.optionsHorizontalBorders = range(int(optionsHorizontalOffset), int(optionsHorizontalOffset + optionsWidth))
-        self.optionsButton = MenuItem(self.application.display, optionsHorizontalOffset, optionsVerticalOffset, optionsString, None)
+        tutorialString = "Tutorial"
+        tutorialWidth, tutorialHeight = self.font.size(tutorialString)
+        # Actually tutorial button X and Y coordinate
+        tutorialVerticalOffset = startVerticalOffset + startHeight + 20
+        tutorialHorizontalOffset = (self.application.screenWidth // 2) - (tutorialWidth // 2)
+        self.tutorialVerticalBorders = range(int(tutorialVerticalOffset), int(tutorialVerticalOffset + tutorialHeight))
+        self.tutorialHorizontalBorders = range(int(tutorialHorizontalOffset), int(tutorialHorizontalOffset + tutorialWidth))
+        self.tutorialButton = MenuItem(self.application.display, tutorialHorizontalOffset, tutorialVerticalOffset, tutorialString, None)
 
         exitString = "Exit"
         exitWidth, exitHeight = self.font.size(exitString)
         # Actually exit button X and Y coordinate
-        exitVerticalOffset = optionsVerticalOffset + optionsHeight + 20
+        exitVerticalOffset = tutorialVerticalOffset + tutorialHeight + 20
         exitHorizontalOffset = (self.application.screenWidth / 2) - (exitWidth // 2)
         self.exitVerticalBorders = range(int(exitVerticalOffset), int(exitVerticalOffset + exitHeight))
         self.exitHorizontalBorders = range(int(exitHorizontalOffset), int(exitHorizontalOffset + exitWidth))
         self.exitButton = MenuItem(self.application.display, exitHorizontalOffset, exitVerticalOffset, exitString, None)
 
         self.menuItems.append(self.startButton)
-        self.menuItems.append(self.optionsButton)
+        self.menuItems.append(self.tutorialButton)
         self.menuItems.append(self.exitButton)
 
     def run(self):
@@ -64,7 +64,7 @@ class Menu:
         while self.running:
             for event in pygame.event.get():
                 self.startButton.isSelected = False
-                self.optionsButton.isSelected = False
+                self.tutorialButton.isSelected = False
                 self.exitButton.isSelected = False
                 if event.type == pygame.QUIT:
                     exit()
@@ -73,15 +73,15 @@ class Menu:
                 if event.type == pygame.MOUSEBUTTONUP:
                     if mouseX in self.startHorizontalBorders and mouseY in self.startVerticalBorders:
                         self.start()
-                    if mouseX in self.optionsHorizontalBorders and mouseY in self.optionsVerticalBorders:
-                        self.options()
+                    if mouseX in self.tutorialHorizontalBorders and mouseY in self.tutorialVerticalBorders:
+                        self.tutorial()
                     if mouseX in self.exitHorizontalBorders and mouseY in self.exitVerticalBorders:
                         self.exit()
 
                 if mouseX in self.startHorizontalBorders and mouseY in self.startVerticalBorders:
                     self.startButton.isSelected = True
-                if mouseX in self.optionsHorizontalBorders and mouseY in self.optionsVerticalBorders:
-                    self.optionsButton.isSelected = True
+                if mouseX in self.tutorialHorizontalBorders and mouseY in self.tutorialVerticalBorders:
+                    self.tutorialButton.isSelected = True
                 if mouseX in self.exitHorizontalBorders and mouseY in self.exitVerticalBorders:
                     self.exitButton.isSelected = True
                 
@@ -89,10 +89,27 @@ class Menu:
             pygame.display.update()
             clock.tick(config["game"]["fps"])
     
-    # TODO: Options menu to change
-    # game's properties
-    def options(self):
-        pass
+    def tutorial(self):
+        clock = pygame.time.Clock()
+        tutorialScreenTicks = 240
+        tutorial = pygame.image.load("src/tiles/tutorial.png")
+        imageWidth = int(self.application.screenWidth * 0.75)
+        imageHeight = int(imageWidth * 0.75)
+        tutorialTile = pygame.transform.scale(tutorial, (imageWidth, imageHeight))
+        horizontalPosition = (self.application.screenWidth - imageWidth) // 2
+        verticalPosition = (self.application.screenHeight - imageHeight) // 2
+        while tutorialScreenTicks > 0:
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT:
+                    exit()
+                keys = pygame.key.get_pressed()
+                if keys[pygame.K_ESCAPE]:
+                    tutorialScreenTicks = 0
+            self.application.display.fill((0, 0, 0))
+            self.application.display.blit(tutorialTile, (horizontalPosition, verticalPosition))
+            tutorialScreenTicks -= 1
+            pygame.display.update()
+            clock.tick(config["game"]["fps"])
     
     def start(self):
         self.application.game.start()
