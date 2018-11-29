@@ -165,7 +165,28 @@ class Game:
     def end(self):
         self.running = False
         pygame.mixer.music.stop()
+        self.gameOverScreen()
         self.gameObjects = []
+    
+    def gameOverScreen(self):
+        clock = pygame.time.Clock()
+        gameOverScreenTicks = 240
+        gameOver = pygame.image.load("src/tiles/gameOver.png")
+        imageWidth = int(self.application.screenWidth * 0.75)
+        imageHeight = imageWidth // 3
+        gameOverTile = pygame.transform.scale(gameOver, (imageWidth, imageHeight))
+        horizontalPosition = (self.application.screenWidth - imageWidth) // 2
+        verticalPosition = (self.application.screenHeight - imageHeight) // 2
+        while gameOverScreenTicks:
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT:
+                    exit()
+            self.display.fill((0, 0, 0))
+            self.display.blit(gameOverTile, (horizontalPosition, verticalPosition))
+            gameOverScreenTicks -= 1
+            pygame.display.update()
+            clock.tick(config["game"]["fps"])
+
 
     def deleteEntity(self, obj):
         self.gameObjects.remove(obj)
