@@ -57,6 +57,8 @@ class Game:
         self.damageTile = pygame.image.load("src/tiles/playerDamage.png")
         self.playerTile = pygame.image.load("src/tiles/player.png")
         self.enemyTile = pygame.image.load("src/tiles/enemy.png")
+        self.enemyHPTile = pygame.image.load("src/tiles/enemyHP.png")
+        self.enemyDamageTile = pygame.image.load("src/tiles/enemyDamage.png")
         self.playerShotTile = pygame.image.load("src/tiles/playerShot.png")
         self.enemyShotTile = pygame.image.load("src/tiles/enemyShot.png")
         self.bonusHealthTile = pygame.image.load("src/tiles/bonus_health.png")
@@ -163,6 +165,18 @@ class Game:
         _, difficultyStringWidth = self.gameFont.size(difficultyString)
         difficulty = self.gameFont.render(difficultyString, False, (250, 250, 250))
         self.display.blit(difficulty, (self.screenWidth - scoreStringWidth - 10, self.screenHeight - scoreStringHeigt - 30))
+
+        # Displays current enemy's HP and damage
+        enemyHealthString = str(int(config["enemy"]["healthPoints"] + 2 * self.difficultyGrade)) + "x"
+        enemyHealthWidth, enemyHealthHeight = self.gameFont.size(enemyHealthString)
+        enemyHealth = self.gameFont.render(enemyHealthString, False, (250, 250, 250))
+        self.display.blit(enemyHealth, (10, 15))
+        self.display.blit(self.enemyHPTile, (enemyHealthWidth + 15, 10))
+        enemyDamageString = str(int(config["enemy"]["damage"] * self.difficultyGrade))
+        enemyDamageWidth, enemyDamageHeight = self.gameFont.size(enemyDamageString)
+        enemyDamage = self.gameFont.render(enemyDamageString, False, (250, 250, 250))
+        self.display.blit(enemyDamage, (10, enemyHealthHeight + 25))
+        self.display.blit(self.enemyDamageTile, (enemyDamageWidth + 15, enemyHealthHeight + 20))
 
         # If player's health more than 5
         # simply displays it's like value (6x)
