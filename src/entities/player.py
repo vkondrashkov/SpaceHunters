@@ -68,11 +68,14 @@ class Player(Character):
     
     def checkCollision(self):
         for entity in self.game.gameObjects:
-            if entity != Enemy:
+            # Player's collision contacts only
+            # with enemies, because bullets and
+            # bonuses collision have own behavior.
+            if type(entity) != Enemy:
                 continue
             entityBordersX = range(entity.borderLeft, entity.borderRight)
             entityBordersY = range(entity.borderTop, entity.borderBottom)
-            if ((self.borderLeft in entityBordersX or self.borderRight in entityBordersX) \
-                and (self.borderTop in entityBordersY or self.borderBottom in entityBordersY)):
+            if (self.borderLeft in entityBordersX or self.borderRight in entityBordersX) \
+                and (self.borderTop in entityBordersY or self.borderBottom in entityBordersY):
                 self.game.deleteEntity(self)
                 self.game.end() 

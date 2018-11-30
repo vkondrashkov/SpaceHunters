@@ -20,6 +20,8 @@ class MenuItem:
         self.execute = command
         self.isSelected = False
 
+    # Method doesn't contain any body because
+    # every Menu button has its own behavior
     def execute(self):
         pass
 
@@ -28,6 +30,10 @@ class MenuItem:
         if self.isSelected == False:
             color = (250, 250, 250)
         else:
+            # Calculates position and size of
+            # background image for Menu button
+            # according to the center of 
+            # selected button's text.
             scaledTile = pygame.transform.scale(self.menuTile, (220, 48))
             width, height = scaledTile.get_rect().size
             menuTextWidth, _ = self.font.size(self.text)

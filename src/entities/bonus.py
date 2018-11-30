@@ -1,7 +1,9 @@
 import pygame
 
+# Importing whole module to avoid
+# circular importing via "from ... import ..."
+import src.entities.player as player_mod
 from src.entities.movable import Movable
-from src.entities.player import Player
 from src.entities.bonusType import BonusType
 
 class Bonus(Movable):
@@ -36,6 +38,9 @@ class Bonus(Movable):
                 height=0,
                 value=5,
                 color=None):
+        # Bonus' width and height calculates
+        # from tiles' size, there is no necessary
+        # to set it from constructor
         width, height = tile.get_rect().size
         Movable.__init__(self, game, x, y, width, height, color, velocity)
         self.__tile = tile
@@ -50,13 +55,14 @@ class Bonus(Movable):
         self.checkCollision()
 
     def draw(self):
-        size = (self.width, self.height)
-        scaledTile = pygame.transform.scale(self.tile, size)
-        self.game.display.blit(scaledTile, (self.x, self.y))
+        self.game.display.blit(self.tile, (self.x, self.y))
     
     def checkCollision(self):
         for entity in self.game.gameObjects:
-            if type(entity) != Player:
+            # Bonus collides only with player
+            # so checking whether entity is player
+            # continue otherwise
+            if type(entity) != player_mod.Player:
                 continue
 
             # Gets player borders vertically and horizontally
@@ -64,8 +70,8 @@ class Bonus(Movable):
             # are located between players's borders.
             playerBordersX = range(entity.borderLeft, entity.borderRight)
             playerBordersY = range(entity.borderTop, entity.borderBottom)
-            if (self.x >= entity.borderLeft and self.x <= entity.borderRight) \
-                and (self.y >= entity.borderTop and self.y <= entity.borderBottom):
+            if (self.borderLeft in playerBordersX or self.borderRight in playerBordersX) \
+                and (self.borderTop in playerBordersY or self.borderBottom in playerBordersY):
                 if self.type == BonusType.damage:
                     entity.damage += self.value
                 elif self.type == BonusType.health:

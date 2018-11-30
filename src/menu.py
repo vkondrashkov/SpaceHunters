@@ -63,12 +63,20 @@ class Menu:
 
         while self.running:
             for event in pygame.event.get():
+                # Resets all buttons state "selected"
+                # to avoid multiple selection
                 self.startButton.isSelected = False
                 self.tutorialButton.isSelected = False
                 self.exitButton.isSelected = False
+
+                # Event for terminal quit from
+                # application, closes whole application
                 if event.type == pygame.QUIT:
                     exit()
 
+                # Gets cursor position and checks which
+                # button have its coordinates to select or
+                # execute button behavior.
                 (mouseX, mouseY) = pygame.mouse.get_pos()
                 if event.type == pygame.MOUSEBUTTONUP:
                     if mouseX in self.startHorizontalBorders and mouseY in self.startVerticalBorders:
@@ -77,7 +85,7 @@ class Menu:
                         self.tutorial()
                     if mouseX in self.exitHorizontalBorders and mouseY in self.exitVerticalBorders:
                         self.exit()
-
+                # Check whether mouse hovers any button
                 if mouseX in self.startHorizontalBorders and mouseY in self.startVerticalBorders:
                     self.startButton.isSelected = True
                 if mouseX in self.tutorialHorizontalBorders and mouseY in self.tutorialVerticalBorders:
@@ -89,10 +97,16 @@ class Menu:
             pygame.display.update()
             clock.tick(config["game"]["fps"])
     
+    # Method to temporary display
+    # tutorial window, lasts 240 ticks
+    # or can be closed by "Escape" button.
     def tutorial(self):
         clock = pygame.time.Clock()
         tutorialScreenTicks = 240
         tutorial = pygame.image.load("src/tiles/tutorial.png")
+
+        # Adaptive size of tutorial image
+        # relatively to window size
         imageWidth = int(self.application.screenWidth * 0.75)
         imageHeight = int(imageWidth * 0.75)
         tutorialTile = pygame.transform.scale(tutorial, (imageWidth, imageHeight))
@@ -115,6 +129,7 @@ class Menu:
         self.application.game.start()
 
     def exit(self):
+        # Safely closing menu window
         self.running = False
 
     def draw(self):
