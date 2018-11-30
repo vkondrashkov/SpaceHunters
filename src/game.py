@@ -217,6 +217,12 @@ class Game:
                     exit()
             self.display.fill((0, 0, 0))
             self.display.blit(gameOverTile, (horizontalPosition, verticalPosition))
+            font = pygame.font.Font(None, 54)
+            scoreString = "Score: " + str(self.score)
+            scoreWidth, _ = font.size(scoreString)
+            score = font.render(scoreString, False, (0, 92, 236))
+            scoreHorizontalPosition = self.screenWidth // 2 - (scoreWidth // 2)
+            self.display.blit(score, (scoreHorizontalPosition, imageHeight + 10))
             gameOverScreenTicks -= 1
             pygame.display.update()
             clock.tick(config["game"]["fps"])

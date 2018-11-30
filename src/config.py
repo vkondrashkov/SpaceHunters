@@ -1,7 +1,7 @@
 config = {
     "game": {
         "caption": "SpaceHunters",
-        "version": "1.2.1",
+        "version": "1.3.1",
         "width": 860,
         "height": 640,
         "fps": 60,
