@@ -56,6 +56,8 @@ class Enemy(Character):
     def update(self):
         if self.healthPoints <= 0:
             self.die()
+        if self.y == self.game.screenHeight:
+            self.game.end()
         self.draw()
         self.shoot()
         self.move(0, self.velocity)        
