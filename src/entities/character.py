@@ -35,6 +35,9 @@ class Character(Movable):
     def hurt(self, damage):
         self.healthPoints -= damage
 
+    # Shoot method is abstract and haven't
+    # own body because of different behavior
+    # for enemies and player.
     @abstractmethod
     def shot(self):
         pass

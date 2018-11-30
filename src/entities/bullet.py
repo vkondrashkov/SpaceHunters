@@ -1,8 +1,10 @@
 import pygame
 
 from src.entities.movable import Movable
-from src.entities.drawable import Drawable
 from src.entities.explosion import Explosion
+# Importing whole module to avoid
+# circular importing via "from ... import ..."
+import src.entities.bonus as bonus_mod
 
 class Bullet(Movable):
     @property
@@ -54,6 +56,8 @@ class Bullet(Movable):
         self.checkCollision()
 
     def draw(self):
+        # Scale bullet's tile according to
+        # it's size.
         size = (self.width, self.height)
         scaledTile = pygame.transform.scale(self.tile, size)
         self.game.display.blit(scaledTile, (self.x, self.y))
@@ -74,6 +78,11 @@ class Bullet(Movable):
             # Also bullet can't hurt another bullet
             if type(entity) is Bullet:
                 continue
+            
+            # Bullets can't collide with bonuses,
+            # they have own collision behavior.
+            if type(entity) is bonus_mod.Bonus:
+                continue
 
             # Explosion entity is also object, we
             # can't hurt explosion, avoid this case also.
@@ -85,8 +94,8 @@ class Bullet(Movable):
             # are located between entity's borders.
             entityBordersX = range(entity.borderLeft, entity.borderRight)
             entityBordersY = range(entity.borderTop, entity.borderBottom)
-            if (self.x >= entity.borderLeft and self.x <= entity.borderRight) \
-                and (self.y >= entity.borderTop and self.y <= entity.borderBottom):
+            if (self.borderLeft in entityBordersX or self.borderRight in entityBordersX) \
+                and (self.borderTop in entityBordersY or self.borderBottom in entityBordersY):
                 entity.hurt(self.damage)
                 self.game.deleteEntity(self)
                 

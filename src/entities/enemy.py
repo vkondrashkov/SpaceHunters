@@ -30,7 +30,7 @@ class Enemy(Character):
                                 tile=tile)
         # Shot rate tick, delay between enemy's shots
         self.shotRateTick = shotRateTick
-        self.currentTick = 30
+        self.currentTick = shotRateTick // 4
         self.bulletTile = bulletTile
         self.score = score
 

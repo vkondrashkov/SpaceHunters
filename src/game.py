@@ -54,6 +54,7 @@ class Game:
 
         backgroundImage = pygame.image.load("src/tiles/background.png")
         self.hpTile = pygame.image.load("src/tiles/playerHP.png")
+        self.damageTile = pygame.image.load("src/tiles/playerDamage.png")
         self.playerTile = pygame.image.load("src/tiles/player.png")
         self.enemyTile = pygame.image.load("src/tiles/enemy.png")
         self.playerShotTile = pygame.image.load("src/tiles/playerShot.png")
@@ -175,6 +176,11 @@ class Game:
         else:
             for i in range(0, player.healthPoints):
                 self.display.blit(self.hpTile, (10 + i*35, self.screenHeight - 30))
+        damageString = str(player.damage)
+        textWidth, _ = self.gameFont.size(damageString)
+        damage = self.gameFont.render(damageString, False, (250, 250, 250))
+        self.display.blit(damage, (10, self.screenHeight - 60))
+        self.display.blit(self.damageTile, (15 + textWidth, self.screenHeight - 70))
     
     def end(self):
         self.running = False
@@ -220,7 +226,7 @@ class Game:
                                         width=config["enemy"]["width"], 
                                         height=config["enemy"]["height"], 
                                         velocity=config["enemy"]["velocity"], 
-                                        healthPoints=int(config["enemy"]["healthPoints"] + self.difficultyGrade), 
+                                        healthPoints=int(config["enemy"]["healthPoints"] + 2 * self.difficultyGrade), 
                                         damage=int(config["enemy"]["damage"] * self.difficultyGrade), 
                                         tile=self.enemyTile,
                                         bulletTile=self.enemyShotTile,
@@ -247,14 +253,18 @@ class Game:
             y = 0
             bonusChoice = randint(0, 1)
             bonusType = None
+            value = 0
             if bonusChoice == 1:
                 bonusType = BonusType.damage
+                value = 1
             else:
                 bonusType = BonusType.health
+                value = 5
             self.gameObjects.append(Bonus(self,
                                         x=x,
                                         y=y,
                                         velocity=5,
                                         type=bonusType,
+                                        value=value,
                                         tile=self.bonusTiles[bonusChoice]))
             self.spawnBonusTick = randint(240, 480)
