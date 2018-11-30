@@ -107,8 +107,12 @@ class Menu:
 
         # Adaptive size of tutorial image
         # relatively to window size
-        imageWidth = int(self.application.screenWidth * 0.75)
-        imageHeight = int(imageWidth * 1.15)
+        if self.application.screenWidth < self.application.screenHeight:
+            minValue = self.application.screenWidth
+        else:
+            minValue = self.application.screenHeight
+        imageHeight = int(minValue * 0.75)
+        imageWidth = int(imageHeight * 0.85)
         tutorialTile = pygame.transform.scale(tutorial, (imageWidth, imageHeight))
         horizontalPosition = (self.application.screenWidth - imageWidth) // 2
         verticalPosition = (self.application.screenHeight - imageHeight) // 2
