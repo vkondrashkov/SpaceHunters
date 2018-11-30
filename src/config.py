@@ -1,8 +1,8 @@
 config = {
     "game": {
         "caption": "SpaceHunters",
-        "version": "1.2.0",
-        "width": 350,
+        "version": "1.2.1",
+        "width": 860,
         "height": 640,
         "fps": 60,
         "spawnEnemyTick": 120,

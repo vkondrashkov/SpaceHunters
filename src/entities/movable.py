@@ -23,6 +23,6 @@ class Movable(Drawable):
         # To avoid memory leaks deletes 
         # all objects that reached Screen 
         # borders by vertical coordinate.
-        if self.y < 0 or self.y > self.game.screenHeight:
+        if self.y < 0 or self.y > self.game.screenHeight + 10:
             self.game.deleteEntity(self)
         
