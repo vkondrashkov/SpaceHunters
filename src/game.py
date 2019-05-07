@@ -89,7 +89,10 @@ class Game:
                 if not response:
                     pass # Error handling
                 json = JSON.loads(response)
-                self.gameObjects = []
+
+                # Creating and replacing old game objects list with new one
+                # to avoid entities "blinking" if delete list and refill it.
+                _gameObjects = []
                 for entity in json:
                     if entity["entityType"] == "player":
                         player = Player(self, 
@@ -102,7 +105,8 @@ class Game:
                                         damage=entity["damage"],
                                         tile=self.playerTile,
                                         bulletTile=self.playerShotTile)
-                        self.gameObjects.append(player)
+                        _gameObjects.append(player)
+                self.gameObjects = _gameObjects
             except Exception:
                 pass
         
