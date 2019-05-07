@@ -125,29 +125,23 @@ class Game:
     
     def loop(self):
         clock = pygame.time.Clock()
-        # player = Player(self,
-        #                 x=(config["game"]["width"] - config["player"]["width"]) / 2, 
-        #                 y=config["game"]["height"] - config["player"]["height"] - 100, 
-        #                 width=config["player"]["width"], 
-        #                 height=config["player"]["height"], 
-        #                 velocity=config["player"]["velocity"], 
-        #                 healthPoints=config["player"]["healthPoints"], 
-        #                 damage=config["player"]["damage"], 
-        #                 tile=self.playerTile,
-        #                 bulletTile=self.playerShotTile)
-        # self.gameObjects.append(player)
 
         # Infinitely plays background music
         pygame.mixer.music.play(-1)
         
-        deltaX = 0
-        deltaY = 0
+        moveUp = False
+        moveDown = False
+        moveLeft = False
+        moveRight = False
         while self.running:
+            # All events are temporary and needs to be changed!
             for event in pygame.event.get():
                 # Resets delta's for any event
                 # In case of "keyUp"
-                deltaX = 0
-                deltaY = 0
+                moveUp = False
+                moveDown = False
+                moveLeft = False
+                moveRight = False
 
                 # Terminal exiting from game
                 if event.type == pygame.QUIT:
@@ -159,26 +153,25 @@ class Game:
                 keys = pygame.key.get_pressed()
                 velocity = config["player"]["velocity"]
                 if keys[pygame.K_LEFT] or keys[pygame.K_a]:
-                    self.__sendEvent("move_left")
+                    moveLeft = True
                 if keys[pygame.K_RIGHT] or keys[pygame.K_d]:
-                    self.__sendEvent("move_right")
+                    moveRight = True
                 if keys[pygame.K_UP] or keys[pygame.K_w]:
-                    self.__sendEvent("move_up")
+                    moveUp = True
                 if keys[pygame.K_DOWN] or keys[pygame.K_s]:
-                    self.__sendEvent("move_down")
+                    moveDown = True
                 if keys[pygame.K_SPACE]:
-                    pass
-                    # if player.shotTick == 0:
-                    #     player.shoot()
-
-            # Cycling spawn enemy ticks,
-            # difficulty raising ticks and
-            # player shot ticks (to avoid shooting bug)
-            #self.cycleSpawnEnemy()
-            #self.cycleSpawnBonus()
-            #self.cycleDifficulty()
-            #self.cyclePlayerShot(player)
+                    self.__sendEvent("shoot")
             
+            if moveLeft:
+                self.__sendEvent("move_left")
+            if moveRight:
+                self.__sendEvent("move_right")
+            if moveUp:
+                self.__sendEvent("move_up")
+            if moveDown:
+                self.__sendEvent("move_down")
+
             # Drawing all the objects
             # Firstly drawing characters and only then
             # drawing HUD (to avoid overlay)
@@ -195,7 +188,6 @@ class Game:
         request = {}
         request["event"] = event
         request["id"] = self.id
-        print(JSON.dumps(request))
         self.__socket.send(JSON.dumps(request).encode("utf8"))
 
     def displayStats(self, player):
