@@ -1,4 +1,7 @@
 import pygame
+import socket as Socket
+import json as JSON
+from threading import Thread
 from random import randint
 
 from src.config import config
@@ -78,9 +81,40 @@ class Game:
     def __init__(self, application):
         self.loadConfig()
         self.__application = application
+    
+    def __onRecieve(self):
+        while self.running:
+            try:
+                response = self.__socket.recv(1024).decode("utf8")
+                if not response:
+                    pass # Error handling
+                json = JSON.loads(response)
+                self.gameObjects = []
+                for entity in json:
+                    if entity["entityType"] == "player":
+                        player = Player(self, 
+                                        x=entity["x"], 
+                                        y=entity["y"], 
+                                        width=entity["width"], 
+                                        height=entity["height"], 
+                                        velocity=entity["velocity"], 
+                                        healthPoints=entity["health"], 
+                                        damage=entity["damage"],
+                                        tile=self.playerTile,
+                                        bulletTile=self.playerShotTile)
+                        self.gameObjects.append(player)
+            except Exception:
+                pass
         
     def start(self):
         self.running = True
+
+        self.__socket = Socket.socket()
+        self.__socket.connect(("spacehunters.local", 33000))
+        self.id = self.__socket.recv(1024).decode("utf8")
+        self.__recieveThread = Thread(target=self.__onRecieve)
+        self.__recieveThread.start()
+
         self.gameObjects = []
         self.difficultyTick = config["game"]["difficultyTick"]
         self.spawnEnemyTick = config["game"]["spawnEnemyTick"]
@@ -91,17 +125,17 @@ class Game:
     
     def loop(self):
         clock = pygame.time.Clock()
-        player = Player(self,
-                        x=(config["game"]["width"] - config["player"]["width"]) / 2, 
-                        y=config["game"]["height"] - config["player"]["height"] - 100, 
-                        width=config["player"]["width"], 
-                        height=config["player"]["height"], 
-                        velocity=config["player"]["velocity"], 
-                        healthPoints=config["player"]["healthPoints"], 
-                        damage=config["player"]["damage"], 
-                        tile=self.playerTile,
-                        bulletTile=self.playerShotTile)
-        self.gameObjects.append(player)
+        # player = Player(self,
+        #                 x=(config["game"]["width"] - config["player"]["width"]) / 2, 
+        #                 y=config["game"]["height"] - config["player"]["height"] - 100, 
+        #                 width=config["player"]["width"], 
+        #                 height=config["player"]["height"], 
+        #                 velocity=config["player"]["velocity"], 
+        #                 healthPoints=config["player"]["healthPoints"], 
+        #                 damage=config["player"]["damage"], 
+        #                 tile=self.playerTile,
+        #                 bulletTile=self.playerShotTile)
+        # self.gameObjects.append(player)
 
         # Infinitely plays background music
         pygame.mixer.music.play(-1)
@@ -117,40 +151,52 @@ class Game:
 
                 # Terminal exiting from game
                 if event.type == pygame.QUIT:
+                    self.running = False
+                    self.__sendEvent("exit")
+                    self.__socket.close()
+                    self.__recieveThread.join()
                     exit()
                 keys = pygame.key.get_pressed()
                 velocity = config["player"]["velocity"]
                 if keys[pygame.K_LEFT] or keys[pygame.K_a]:
-                    deltaX = -velocity
+                    self.__sendEvent("move_left")
                 if keys[pygame.K_RIGHT] or keys[pygame.K_d]:
-                    deltaX = velocity
+                    self.__sendEvent("move_right")
                 if keys[pygame.K_UP] or keys[pygame.K_w]:
-                    deltaY = -velocity
+                    self.__sendEvent("move_up")
                 if keys[pygame.K_DOWN] or keys[pygame.K_s]:
-                    deltaY = velocity
+                    self.__sendEvent("move_down")
                 if keys[pygame.K_SPACE]:
-                    if player.shotTick == 0:
-                        player.shoot()
+                    pass
+                    # if player.shotTick == 0:
+                    #     player.shoot()
 
             # Cycling spawn enemy ticks,
             # difficulty raising ticks and
             # player shot ticks (to avoid shooting bug)
-            self.cycleSpawnEnemy()
-            self.cycleSpawnBonus()
-            self.cycleDifficulty()
-            self.cyclePlayerShot(player)
+            #self.cycleSpawnEnemy()
+            #self.cycleSpawnBonus()
+            #self.cycleDifficulty()
+            #self.cyclePlayerShot(player)
             
             # Drawing all the objects
             # Firstly drawing characters and only then
             # drawing HUD (to avoid overlay)
             self.display.blit(self.background, (0, 0))
-            player.move(deltaX, deltaY)
+            #player.move(deltaX, deltaY)
             for object in self.gameObjects:
                 object.update()
-            self.displayStats(player)
+            #self.displayStats(player)
             pygame.display.update()
 
             clock.tick(config["game"]["fps"])
+
+    def __sendEvent(self, event):
+        request = {}
+        request["event"] = event
+        request["id"] = self.id
+        print(JSON.dumps(request))
+        self.__socket.send(JSON.dumps(request).encode("utf8"))
 
     def displayStats(self, player):
         # Displays current player's score
@@ -198,6 +244,10 @@ class Game:
     
     def end(self):
         self.running = False
+        self.__sendEvent("exit")
+        self.__socket.close()
+        self.__recieveThread.join()
+
         pygame.mixer.music.stop()
         self.gameOverScreen()
         self.gameObjects = []
