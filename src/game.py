@@ -58,7 +58,8 @@ class Game:
         backgroundImage = pygame.image.load("src/tiles/background.png")
         self.hpTile = pygame.image.load("src/tiles/playerHP.png")
         self.damageTile = pygame.image.load("src/tiles/playerDamage.png")
-        self.playerTile = pygame.image.load("src/tiles/player.png")
+        self.player1Tile = pygame.image.load("src/tiles/player1.png")
+        self.player2Tile = pygame.image.load("src/tiles/player2.png")
         self.enemyTile = pygame.image.load("src/tiles/enemy.png")
         self.enemyHPTile = pygame.image.load("src/tiles/enemyHP.png")
         self.enemyDamageTile = pygame.image.load("src/tiles/enemyDamage.png")
@@ -95,6 +96,9 @@ class Game:
                 _gameObjects = []
                 for entity in json:
                     if entity["entityType"] == "player":
+                        playerTile = self.player2Tile
+                        if entity["id"] == self.id:
+                            playerTile = self.player1Tile
                         player = Player(self, 
                                         x=entity["x"], 
                                         y=entity["y"], 
@@ -103,7 +107,7 @@ class Game:
                                         velocity=entity["velocity"], 
                                         healthPoints=entity["health"], 
                                         damage=entity["damage"],
-                                        tile=self.playerTile,
+                                        tile=playerTile,
                                         bulletTile=self.playerShotTile)
                         _gameObjects.append(player)
                 self.gameObjects = _gameObjects
