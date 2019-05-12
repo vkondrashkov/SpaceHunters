@@ -147,10 +147,6 @@ class Game:
         self.__recieveThread.start()
 
         self.gameObjects = []
-        self.difficultyTick = config["game"]["difficultyTick"]
-        self.spawnEnemyTick = config["game"]["spawnEnemyTick"]
-        self.spawnBonusTick = 240
-        self.difficultyGrade = 1
         self.score = 0
         self.loop()
     
@@ -299,65 +295,3 @@ class Game:
             gameOverScreenTicks -= 1
             pygame.display.update()
             clock.tick(config["game"]["fps"])
-
-
-    def deleteEntity(self, obj):
-        self.gameObjects.remove(obj)
-    
-    def cycleSpawnEnemy(self):
-        if self.spawnEnemyTick > 0:
-            self.spawnEnemyTick -= 1
-        else:
-            # Generates random horizontal position
-            # considering it's width to avoid generating
-            # object beyond Screen borders.
-            x = randint(0, self.screenWidth - config["enemy"]["width"])
-            y = 0
-            self.gameObjects.append(Enemy(self, 
-                                        x=x, 
-                                        y=y, 
-                                        width=config["enemy"]["width"], 
-                                        height=config["enemy"]["height"], 
-                                        velocity=config["enemy"]["velocity"], 
-                                        healthPoints=int(config["enemy"]["healthPoints"] + 2 * self.difficultyGrade), 
-                                        damage=int(config["enemy"]["damage"] * self.difficultyGrade), 
-                                        tile=self.enemyTile,
-                                        bulletTile=self.enemyShotTile,
-                                        score=int(config["enemy"]["score"] * self.difficultyGrade),
-                                        shotRateTick=int(config["enemy"]["shotRateTick"] - (self.difficultyGrade * 5))))
-            self.spawnEnemyTick = config["game"]["spawnEnemyTick"]
-    
-    def cycleDifficulty(self):
-        if self.difficultyTick > 0:
-            self.difficultyTick -= 1
-        else:
-            self.difficultyGrade += 0.25
-            self.difficultyTick = config["game"]["difficultyTick"]
-    
-    def cyclePlayerShot(self, player):
-        if player.shotTick > 0:
-            player.shotTick -= 1
-    
-    def cycleSpawnBonus(self):
-        if self.spawnBonusTick > 0:
-            self.spawnBonusTick -= 1
-        else:
-            x = randint(0, self.screenWidth - 20)
-            y = 0
-            bonusChoice = randint(0, 1)
-            bonusType = None
-            value = 0
-            if bonusChoice == 1:
-                bonusType = BonusType.damage
-                value = 1
-            else:
-                bonusType = BonusType.health
-                value = 5
-            self.gameObjects.append(Bonus(self,
-                                        x=x,
-                                        y=y,
-                                        velocity=5,
-                                        type=bonusType,
-                                        value=value,
-                                        tile=self.bonusTiles[bonusChoice]))
-            self.spawnBonusTick = randint(240, 480)
