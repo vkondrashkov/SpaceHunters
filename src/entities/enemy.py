@@ -54,13 +54,13 @@ class Enemy(Character):
         self.game.score += self.score
 
     def update(self):
-        if self.healthPoints <= 0:
-            self.die()
-        if self.y == self.game.screenHeight:
-            self.game.end()
+        # if self.healthPoints <= 0:
+            # self.die()
+        # if self.y == self.game.screenHeight:
+            # self.game.end()
         self.draw()
-        self.shoot()
-        self.move(0, self.velocity)        
+        # self.shoot()
+        # self.move(0, self.velocity)        
     
     def move(self, deltaX, deltaY):
         Character.move(self, deltaX, deltaY)

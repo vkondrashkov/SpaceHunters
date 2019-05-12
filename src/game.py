@@ -110,6 +110,29 @@ class Game:
                                         tile=playerTile,
                                         bulletTile=self.playerShotTile)
                         _gameObjects.append(player)
+                    if entity["entityType"] == "enemy":
+                        enemy = Enemy(self,
+                                    x=entity["x"],
+                                    y=entity["y"],
+                                    width=entity["width"],
+                                    height=entity["height"],
+                                    velocity=entity["velocity"],
+                                    healthPoints=entity["health"],
+                                    damage=entity["damage"],
+                                    tile=self.enemyTile,
+                                    bulletTile=self.enemyShotTile,
+                                    score=0,
+                                    shotRateTick=0)
+                        _gameObjects.append(enemy)
+                    if entity["entityType"] == "bullet":
+                        bullet = Bullet(self,
+                                        x=entity["x"],
+                                        y=entity["y"],
+                                        destinationX=entity["x"],
+                                        destinationY=entity["y"],
+                                        velocity=entity["velocity"],
+                                        tile=self.enemyShotTile)
+                        _gameObjects.append(bullet)
                 self.gameObjects = _gameObjects
             except Exception:
                 pass
