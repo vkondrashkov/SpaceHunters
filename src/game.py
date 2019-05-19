@@ -94,6 +94,9 @@ class Game:
                 # Creating and replacing old game objects list with new one
                 # to avoid entities "blinking" if delete list and refill it.
                 _gameObjects = []
+                if "exit" in json:
+                    self.end()
+                    break
                 for entity in json:
                     if entity["entityType"] == "player":
                         playerTile = self.player2Tile
@@ -262,14 +265,14 @@ class Game:
         self.display.blit(self.damageTile, (15 + textWidth, self.screenHeight - 70))
     
     def end(self):
-        self.running = False
+        pygame.mixer.music.stop()
         self.__sendEvent("exit")
         self.__socket.close()
+        self.running = False
         self.__recieveThread.join()
-
-        pygame.mixer.music.stop()
         self.gameOverScreen()
         self.gameObjects = []
+        
     
     def gameOverScreen(self):
         clock = pygame.time.Clock()
