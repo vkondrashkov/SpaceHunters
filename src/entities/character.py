@@ -44,5 +44,9 @@ class Character(Movable):
     
     @abstractmethod
     def draw(self):
+        healthString = "HP " + str(self.healthPoints)
+        healthWidth, healthHeight = pygame.font.Font(None, 30).size(healthString)
+        enemyHealth = pygame.font.Font(None, 30).render(healthString, False, (250, 250, 250))
+        self.game.display.blit(enemyHealth, (self.x + self.width / 2 - healthWidth / 2, self.y - healthHeight))
         scaledTile = pygame.transform.scale(self.tile, (self.width, self.height))
         self.game.display.blit(scaledTile, (self.x, self.y))

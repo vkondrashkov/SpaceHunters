@@ -1,4 +1,7 @@
 import pygame
+import socket as Socket
+import json as JSON
+from threading import Thread
 from random import randint
 
 from src.config import config
@@ -55,7 +58,8 @@ class Game:
         backgroundImage = pygame.image.load("src/tiles/background.png")
         self.hpTile = pygame.image.load("src/tiles/playerHP.png")
         self.damageTile = pygame.image.load("src/tiles/playerDamage.png")
-        self.playerTile = pygame.image.load("src/tiles/player.png")
+        self.player1Tile = pygame.image.load("src/tiles/player1.png")
+        self.player2Tile = pygame.image.load("src/tiles/player2.png")
         self.enemyTile = pygame.image.load("src/tiles/enemy.png")
         self.enemyHPTile = pygame.image.load("src/tiles/enemyHP.png")
         self.enemyDamageTile = pygame.image.load("src/tiles/enemyDamage.png")
@@ -78,79 +82,143 @@ class Game:
     def __init__(self, application):
         self.loadConfig()
         self.__application = application
+    
+    def __onRecieve(self):
+        while self.running:
+            try:
+                response = self.__socket.recv(1024).decode("utf8")
+                if not response:
+                    pass # Error handling
+                json = JSON.loads(response)
+
+                # Creating and replacing old game objects list with new one
+                # to avoid entities "blinking" if delete list and refill it.
+                _gameObjects = []
+                if "exit" in json:
+                    self.end()
+                    break
+                for entity in json:
+                    if entity["entityType"] == "player":
+                        playerTile = self.player2Tile
+                        if entity["id"] == self.id:
+                            playerTile = self.player1Tile
+                        player = Player(self, 
+                                        x=entity["x"], 
+                                        y=entity["y"], 
+                                        width=entity["width"], 
+                                        height=entity["height"], 
+                                        velocity=entity["velocity"], 
+                                        healthPoints=entity["health"], 
+                                        damage=entity["damage"],
+                                        tile=playerTile,
+                                        bulletTile=self.playerShotTile)
+                        _gameObjects.append(player)
+                    if entity["entityType"] == "enemy":
+                        enemy = Enemy(self,
+                                    x=entity["x"],
+                                    y=entity["y"],
+                                    width=entity["width"],
+                                    height=entity["height"],
+                                    velocity=entity["velocity"],
+                                    healthPoints=entity["health"],
+                                    damage=entity["damage"],
+                                    tile=self.enemyTile,
+                                    bulletTile=self.enemyShotTile,
+                                    score=0,
+                                    shotRateTick=0)
+                        _gameObjects.append(enemy)
+                    if entity["entityType"] == "bullet":
+                        bullet = Bullet(self,
+                                        x=entity["x"],
+                                        y=entity["y"],
+                                        destinationX=entity["x"],
+                                        destinationY=entity["y"],
+                                        velocity=entity["velocity"],
+                                        tile=self.enemyShotTile)
+                        _gameObjects.append(bullet)
+                self.gameObjects = _gameObjects
+            except Exception:
+                pass
         
     def start(self):
         self.running = True
+
+        self.__socket = Socket.socket()
+        self.__socket.connect(("spacehunters.local", 33000))
+        self.id = self.__socket.recv(1024).decode("utf8")
+        self.__recieveThread = Thread(target=self.__onRecieve)
+        self.__recieveThread.start()
+
         self.gameObjects = []
-        self.difficultyTick = config["game"]["difficultyTick"]
-        self.spawnEnemyTick = config["game"]["spawnEnemyTick"]
-        self.spawnBonusTick = 240
-        self.difficultyGrade = 1
         self.score = 0
         self.loop()
     
     def loop(self):
         clock = pygame.time.Clock()
-        player = Player(self,
-                        x=(config["game"]["width"] - config["player"]["width"]) / 2, 
-                        y=config["game"]["height"] - config["player"]["height"] - 100, 
-                        width=config["player"]["width"], 
-                        height=config["player"]["height"], 
-                        velocity=config["player"]["velocity"], 
-                        healthPoints=config["player"]["healthPoints"], 
-                        damage=config["player"]["damage"], 
-                        tile=self.playerTile,
-                        bulletTile=self.playerShotTile)
-        self.gameObjects.append(player)
 
         # Infinitely plays background music
         pygame.mixer.music.play(-1)
         
-        deltaX = 0
-        deltaY = 0
+        moveUp = False
+        moveDown = False
+        moveLeft = False
+        moveRight = False
         while self.running:
+            # All events are temporary and needs to be changed!
             for event in pygame.event.get():
                 # Resets delta's for any event
                 # In case of "keyUp"
-                deltaX = 0
-                deltaY = 0
+                moveUp = False
+                moveDown = False
+                moveLeft = False
+                moveRight = False
 
                 # Terminal exiting from game
                 if event.type == pygame.QUIT:
+                    self.running = False
+                    self.__sendEvent("exit")
+                    self.__socket.close()
+                    self.__recieveThread.join()
                     exit()
                 keys = pygame.key.get_pressed()
                 velocity = config["player"]["velocity"]
                 if keys[pygame.K_LEFT] or keys[pygame.K_a]:
-                    deltaX = -velocity
+                    moveLeft = True
                 if keys[pygame.K_RIGHT] or keys[pygame.K_d]:
-                    deltaX = velocity
+                    moveRight = True
                 if keys[pygame.K_UP] or keys[pygame.K_w]:
-                    deltaY = -velocity
+                    moveUp = True
                 if keys[pygame.K_DOWN] or keys[pygame.K_s]:
-                    deltaY = velocity
+                    moveDown = True
                 if keys[pygame.K_SPACE]:
-                    if player.shotTick == 0:
-                        player.shoot()
-
-            # Cycling spawn enemy ticks,
-            # difficulty raising ticks and
-            # player shot ticks (to avoid shooting bug)
-            self.cycleSpawnEnemy()
-            self.cycleSpawnBonus()
-            self.cycleDifficulty()
-            self.cyclePlayerShot(player)
+                    self.__sendEvent("shoot")
             
+            if moveLeft:
+                self.__sendEvent("move_left")
+            if moveRight:
+                self.__sendEvent("move_right")
+            if moveUp:
+                self.__sendEvent("move_up")
+            if moveDown:
+                self.__sendEvent("move_down")
+
             # Drawing all the objects
             # Firstly drawing characters and only then
             # drawing HUD (to avoid overlay)
             self.display.blit(self.background, (0, 0))
-            player.move(deltaX, deltaY)
+            #player.move(deltaX, deltaY)
             for object in self.gameObjects:
                 object.update()
-            self.displayStats(player)
+            #self.displayStats(player)
             pygame.display.update()
 
             clock.tick(config["game"]["fps"])
+
+    def __sendEvent(self, event):
+        request = {}
+        request["event"] = event
+        request["id"] = self.id
+        self.__socket.send(JSON.dumps(request).encode("utf8"))
 
     def displayStats(self, player):
         # Displays current player's score
@@ -197,10 +265,14 @@ class Game:
         self.display.blit(self.damageTile, (15 + textWidth, self.screenHeight - 70))
     
     def end(self):
-        self.running = False
         pygame.mixer.music.stop()
+        self.__sendEvent("exit")
+        self.__socket.close()
+        self.running = False
+        self.__recieveThread.join()
         self.gameOverScreen()
         self.gameObjects = []
+        
     
     def gameOverScreen(self):
         clock = pygame.time.Clock()
@@ -226,65 +298,3 @@ class Game:
             gameOverScreenTicks -= 1
             pygame.display.update()
             clock.tick(config["game"]["fps"])
-
-
-    def deleteEntity(self, obj):
-        self.gameObjects.remove(obj)
-    
-    def cycleSpawnEnemy(self):
-        if self.spawnEnemyTick > 0:
-            self.spawnEnemyTick -= 1
-        else:
-            # Generates random horizontal position
-            # considering it's width to avoid generating
-            # object beyond Screen borders.
-            x = randint(0, self.screenWidth - config["enemy"]["width"])
-            y = 0
-            self.gameObjects.append(Enemy(self, 
-                                        x=x, 
-                                        y=y, 
-                                        width=config["enemy"]["width"], 
-                                        height=config["enemy"]["height"], 
-                                        velocity=config["enemy"]["velocity"], 
-                                        healthPoints=int(config["enemy"]["healthPoints"] + 2 * self.difficultyGrade), 
-                                        damage=int(config["enemy"]["damage"] * self.difficultyGrade), 
-                                        tile=self.enemyTile,
-                                        bulletTile=self.enemyShotTile,
-                                        score=int(config["enemy"]["score"] * self.difficultyGrade),
-                                        shotRateTick=int(config["enemy"]["shotRateTick"] - (self.difficultyGrade * 5))))
-            self.spawnEnemyTick = config["game"]["spawnEnemyTick"]
-    
-    def cycleDifficulty(self):
-        if self.difficultyTick > 0:
-            self.difficultyTick -= 1
-        else:
-            self.difficultyGrade += 0.25
-            self.difficultyTick = config["game"]["difficultyTick"]
-    
-    def cyclePlayerShot(self, player):
-        if player.shotTick > 0:
-            player.shotTick -= 1
-    
-    def cycleSpawnBonus(self):
-        if self.spawnBonusTick > 0:
-            self.spawnBonusTick -= 1
-        else:
-            x = randint(0, self.screenWidth - 20)
-            y = 0
-            bonusChoice = randint(0, 1)
-            bonusType = None
-            value = 0
-            if bonusChoice == 1:
-                bonusType = BonusType.damage
-                value = 1
-            else:
-                bonusType = BonusType.health
-                value = 5
-            self.gameObjects.append(Bonus(self,
-                                        x=x,
-                                        y=y,
-                                        velocity=5,
-                                        type=bonusType,
-                                        value=value,
-                                        tile=self.bonusTiles[bonusChoice]))
-            self.spawnBonusTick = randint(240, 480)
